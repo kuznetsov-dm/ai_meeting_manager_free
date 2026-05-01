@@ -1,0 +1,53 @@
+[allowlist]
+ids = [
+  "transcription.whisperadvanced",
+  "llm.llama_cli",
+  "text_processing.minutes_heuristic_v2",
+  "text_processing.semantic_refiner",
+]
+
+[pipeline]
+optional_stage_retries = 1
+disabled_stages = ["management", "service"]
+
+[disabled]
+ids = []
+
+[stages.transcription]
+plugin_id = "transcription.whisperadvanced"
+module = "plugins.transcription.whisper_advanced.whisper_advanced"
+class = "Plugin"
+params.model = "tiny"
+params.language_mode = "auto"
+params.language_code = ""
+params.allow_download = false
+
+[stages.text_processing]
+plugin_id = "text_processing.minutes_heuristic_v2"
+module = "plugins.text_processing.minutes_heuristic_v2.minutes_heuristic_v2"
+class = "Plugin"
+params.cascade = "balanced"
+params.summary_mode = "hybrid"
+params.actions_mode = "hybrid"
+params.allow_download = false
+
+[stages.llm_processing]
+plugin_id = "llm.llama_cli"
+module = "plugins.llm.llama_cli.llama_cli"
+class = "Plugin"
+params.binary_path = "bin/llama/llama-cli"
+params.model_path = ""
+params.model_id = ""
+params.model_quant = "Q4_K_M"
+params.allow_download = true
+params.cache_dir = "models/llama"
+params.prompt_profile = "essential"
+params.prompt_custom = ""
+params.prompt_language = ""
+params.prompt_max_words = 600
+params.max_tokens = 900
+params.temperature = 0.2
+params.ctx_size = 4096
+params.gpu_layers = -1
+params.extra_args = ""
+

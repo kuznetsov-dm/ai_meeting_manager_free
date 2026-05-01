@@ -1,0 +1,20 @@
+{
+  "plugins": {
+    "llm.deepseek": {
+      "state": "active"
+    },
+    "llm.ollama": {
+      "state": "active"
+    },
+    "llm.openrouter": {
+      "state": "active"
+    },
+    "llm.zai": {
+      "state": "active"
+    },
+    "management.unified": {
+      "state": "active"
+    }
+  },
+  "version": "1"
+}

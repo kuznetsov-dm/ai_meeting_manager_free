@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://apogee.ai/aimn/server_contracts/catalog.schema.json",
+  "title": "AIMN Plugin Catalog Snapshot",
+  "type": "object",
+  "required": ["catalog_version", "plugins"],
+  "properties": {
+    "catalog_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "app_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "release_profile": {
+      "type": "string"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "plugins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "plugin_id",
+          "version",
+          "api_version",
+          "stage_id",
+          "owner_type",
+          "publisher_id",
+          "pricing_model",
+          "catalog_enabled"
+        ],
+        "properties": {
+          "plugin_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "api_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "stage_id": {
+            "type": "string",
+            "enum": ["transcription", "llm_processing", "management", "service", "other"]
+          },
+          "owner_type": {
+            "type": "string",
+            "enum": ["first_party", "third_party"]
+          },
+          "publisher_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_\\-]*$"
+          },
+          "pricing_model": {
+            "type": "string",
+            "enum": ["free", "one_time", "subscription"]
+          },
+          "requires_platform_edition": {
+            "type": "boolean"
+          },
+          "catalog_enabled": {
+            "type": "boolean"
+          },
+          "compatible_app_versions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "download_url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "checksum_sha256": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "signature": {
+            "type": "string",
+            "minLength": 1
+          },
+          "signature_algorithm": {
+            "type": "string",
+            "enum": ["rsa-sha256"]
+          },
+          "signing_key_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "manifest_url": {
+            "type": "string"
+          },
+          "product_name": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "highlights": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "provider_name": {
+            "type": "string"
+          },
+          "provider_description": {
+            "type": "string"
+          },
+          "default_visibility": {
+            "type": "string",
+            "enum": ["visible", "hidden"]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "howto": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "billing_product_id": {
+            "type": "string"
+          },
+          "fallback_plugin_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

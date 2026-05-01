@@ -1,0 +1,94 @@
+{
+  "provider": {
+    "name": "Llama.cpp",
+    "description": "Efficient local LLM runtime for privacy-first workflows."
+  },
+  "models": [
+    {
+      "id": "unsloth/Qwen3-0.6B-GGUF",
+      "name": "Qwen3 0.6B (GGUF)",
+      "description": "Smallest starter option for fast local drafts.",
+      "quant": "Q4_K_M",
+      "size_hint": "~0.6 GB",
+      "file": "Qwen3-0.6B-Q4_K_M.gguf",
+      "source_url": "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF",
+      "download_url": "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf"
+    },
+    {
+      "id": "Qwen/Qwen3-1.7B-GGUF",
+      "name": "Qwen3 1.7B (GGUF)",
+      "description": "Balanced starter option with stronger quality before moving to larger models.",
+      "quant": "Q8_0",
+      "size_hint": "1.8 GB",
+      "file": "Qwen3-1.7B-Q8_0.gguf",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF",
+      "download_url": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q8_0.gguf"
+    }
+  ],
+  "capabilities": {
+    "alias_code_policy": {
+      "provider_code": "lm"
+    },
+    "health": {
+      "required_settings": [],
+      "local_model_cache": {
+        "cache_dir_key": "cache_dir",
+        "cache_dir_default": "models/llama",
+        "cache_dir_env": "AIMN_LLAMA_CACHE_DIR",
+        "model_path_key": "model_path",
+        "model_id_key": "model_id",
+        "allow_download_key": "allow_download",
+        "file_globs": [
+          "*.gguf"
+        ],
+        "model_label": "GGUF model",
+        "missing_code": "llama_model_missing",
+        "path_missing_code": "llama_model_path_missing",
+        "not_cached_code": "llama_model_not_cached"
+      }
+    },
+    "runtime": {
+      "local_binary": {
+        "setting_key": "binary_path",
+        "env_key": "AIMN_LLAMA_CLI_PATH",
+        "fallback": "bin/llama/llama-cli",
+        "label": "Llama CLI binary"
+      }
+    },
+    "models": {
+      "storage": "local",
+      "local_files": {
+        "root_setting": "cache_dir",
+        "default_root": "models/llama",
+        "glob": "*.gguf"
+      },
+      "managed_actions": {
+        "list": "list_models",
+        "pull": "download_model",
+        "remove": "remove_model"
+      }
+    },
+    "credentials_hub": {
+      "description": "For public GGUF models no token is needed. Add a Hugging Face User Access Token only for gated or private repositories.",
+      "validate_action": "validate_hf_token",
+      "fields": [
+        {
+          "key": "hf_token",
+          "label": "Hugging Face Token",
+          "placeholder": "hf_...",
+          "help_text": "Needed only for gated or private Hugging Face repositories."
+        }
+      ],
+      "links": [
+        {
+          "label": "HF tokens",
+          "url": "https://huggingface.co/settings/tokens"
+        },
+        {
+          "label": "Token docs",
+          "url": "https://huggingface.co/docs/hub/security-tokens"
+        }
+      ]
+    }
+  }
+}

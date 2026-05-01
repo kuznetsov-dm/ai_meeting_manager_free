@@ -1,0 +1,6 @@
+{
+  "provider": {
+    "name": "SQLite FTS Search",
+    "description": "Local full-text search powered by SQLite FTS."
+  }
+}

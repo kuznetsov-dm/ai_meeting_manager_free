@@ -1,0 +1,42 @@
+{
+  "id": "llm.llama_cli",
+  "name": "Llama (CLI)",
+  "product_name": "Llama.cpp Local LLM",
+  "highlights": "Локальные summary на llama.cpp: приватно, предсказуемо, без облачных вызовов.",
+  "description": "Запускает llama.cpp локально для генерации summary и других LLM-результатов без облачных сервисов. Бинарник идёт в поставке, а модель можно скачать из каталога в Settings, подключить по прямой ссылке на .gguf или выбрать локальный GGUF-файл.",
+  "ui_stage": "llm_processing",
+  "tags": ["AI", "Локально"],
+  "howto": [
+    "Откройте Settings > AI Processing.",
+    "Добавьте модель из каталога, по прямой ссылке на .gguf или выберите локальный GGUF-файл.",
+    "При необходимости проверьте путь к бинарнику llama.cpp.",
+    "Запустите встречу, чтобы получить Summary."
+  ],
+  "version": "0.2.0",
+  "api_version": "1",
+  "entrypoint": "plugins.llm.llama_cli.llama_cli:Plugin",
+  "hooks": [
+    {
+      "name": "derive.after_postprocess",
+      "mode": "optional",
+      "priority": 100
+    }
+  ],
+  "ui_schema": {
+    "settings": [
+      {
+        "key": "hf_token",
+        "label": "Hugging Face Token",
+        "value": ""
+      }
+    ]
+  },
+  "artifacts": [
+    "summary"
+  ],
+  "ui": {
+    "tabs": [],
+    "widgets": []
+  }
+}
+

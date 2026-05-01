@@ -1,0 +1,19 @@
+{
+  "id": "search.semantic_smart",
+  "name": "Smart Semantic Search",
+  "product_name": "Semantic AI Search",
+  "highlights": "Умный поиск по смыслу с использованием LLM и векторов.",
+  "description": "Плагин выполняет семантический поиск по всем артефактам встреч. Вместо простого совпадения слов он понимает смысл запроса и находит наиболее релевантные фрагменты.",
+  "ui_stage": "service",
+  "tags": ["Search", "AI", "Semantic", "Embeddings"],
+  "version": "1.0.0",
+  "api_version": "1",
+  "entrypoint": "plugins.search.smart.smart:Plugin",
+  "capabilities": { "global_search": { "mode": "semantic" } },
+  "hooks": [],
+  "artifacts": [],
+  "ui_schema": {
+    "settings": []
+  }
+}
+

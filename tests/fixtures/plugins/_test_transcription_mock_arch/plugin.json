@@ -1,0 +1,13 @@
+{
+  "id": "transcription.test_mock_arch",
+  "name": "Test Transcription Mock Arch",
+  "product_name": "Test Transcription Mock Arch",
+  "highlights": "",
+  "description": "",
+  "version": "0.1.0",
+  "api_version": "1",
+  "entrypoint": "_test_transcription_mock_arch.transcription_mock:Plugin",
+  "hooks": [{"name": "transcribe.run", "mode": "optional", "priority": 100}],
+  "artifacts": ["transcript", "asr_segments_json"],
+  "ui": {"tabs": [], "widgets": []}
+}

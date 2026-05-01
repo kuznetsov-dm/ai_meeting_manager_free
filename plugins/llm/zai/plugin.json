@@ -1,0 +1,41 @@
+{
+  "id": "llm.zai",
+  "name": "Z.ai",
+  "product_name": "Z.ai",
+  "highlights": "Бесплатные Z.ai 4.5 и 4.7: стабильный русский язык, длинный контекст и хороший запас по качеству без оплаты токенов.",
+  "description": "Интеграция с Z.ai для генерации summary по встречам через бесплатный API. Встроены две карточки: Z.ai 4.5 Free для стабильной рабочей суммаризации и Z.ai 4.7 Free (Turbo/Preview) для очень длинных стратегических сессий.",
+  "ui_stage": "llm_processing",
+  "tags": ["AI", "Облако"],
+  "howto": [
+    "Откройте Settings > AI Processing.",
+    "Выберите Z.ai и укажите API key (если требуется).",
+    "Запустите встречу, чтобы получить Summary."
+  ],
+  "version": "0.1.0",
+  "api_version": "1",
+  "entrypoint": "plugins.llm.zai.zai:Plugin",
+  "hooks": [
+    {
+      "name": "derive.after_postprocess",
+      "mode": "optional",
+      "priority": 100
+    }
+  ],
+  "artifacts": [
+    "summary"
+  ],
+  "ui_schema": {
+    "settings": [
+      {
+        "key": "api_key",
+        "label": "API Key",
+        "value": ""
+      }
+    ]
+  },
+  "ui": {
+    "tabs": [],
+    "widgets": []
+  }
+}
+

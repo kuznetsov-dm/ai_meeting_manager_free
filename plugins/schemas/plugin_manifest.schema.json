@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://apogee.ai/aimn/plugin_manifest.schema.json",
+  "title": "AIMN Plugin Manifest",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "product_name",
+    "highlights",
+    "description",
+    "version",
+    "api_version",
+    "entrypoint",
+    "hooks",
+    "artifacts"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "product_name": { "type": "string", "minLength": 1 },
+    "highlights": { "type": "string" },
+    "description": { "type": "string" },
+    "version": { "type": "string", "minLength": 1 },
+    "api_version": { "type": "string", "const": "1" },
+    "entrypoint": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_\\.]*:[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "ui_hidden": { "type": "boolean" },
+    "default_visibility": {
+      "type": "string",
+      "enum": ["visible", "hidden"]
+    },
+    "ui_stage": {
+      "type": "string",
+      "enum": ["transcription", "llm_processing", "management", "service", "other"]
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "howto": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "hooks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "mode": { "type": "string", "enum": ["optional", "required"] },
+          "priority": { "type": "integer" },
+          "id": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "distribution": {
+      "type": "object",
+      "properties": {
+        "channel": {
+          "type": "string",
+          "enum": ["bundled", "catalog", "private", "custom"]
+        },
+        "owner_type": {
+          "type": "string",
+          "enum": ["first_party", "third_party"]
+        },
+        "publisher_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_\\-]*$"
+        },
+        "pricing_model": {
+          "type": "string",
+          "enum": ["free", "one_time", "subscription"]
+        },
+        "requires_platform_edition": { "type": "boolean" },
+        "catalog_enabled": { "type": "boolean" },
+        "billing_product_id": { "type": "string" },
+        "fallback_plugin_id": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "ui_schema": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "label"],
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]*$"
+              },
+              "label": { "type": "string", "minLength": 1 },
+              "value": {
+                "oneOf": [
+                  { "type": "string" },
+                  { "type": "number" },
+                  { "type": "boolean" },
+                  { "type": "null" }
+                ]
+              },
+              "advanced": { "type": "boolean" },
+              "editable": { "type": "boolean" },
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["label", "value"],
+                  "properties": {
+                    "label": { "type": "string", "minLength": 1 },
+                    "value": {
+                      "oneOf": [
+                        { "type": "string" },
+                        { "type": "number" },
+                        { "type": "boolean" },
+                        { "type": "null" }
+                      ]
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "not": {
+        "anyOf": [
+          { "required": ["stages"] },
+          { "required": ["pipeline"] }
+        ]
+      }
+    }
+  ]
+}

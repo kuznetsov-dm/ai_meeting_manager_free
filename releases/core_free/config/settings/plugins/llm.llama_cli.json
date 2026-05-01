@@ -1,0 +1,42 @@
+{
+  "hidden_model_files": [],
+  "hidden_model_ids": [],
+  "models": [
+    {
+      "availability_status": "needs_setup",
+      "catalog_source": "recommended",
+      "description": "Smallest starter option for fast local drafts.",
+      "download_url": "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf",
+      "enabled": false,
+      "favorite": false,
+      "file": "Qwen3-0.6B-Q4_K_M.gguf",
+      "installed": false,
+      "model_id": "unsloth/Qwen3-0.6B-GGUF",
+      "observed_success": false,
+      "product_name": "Qwen3 0.6B (GGUF)",
+      "quant": "Q4_K_M",
+      "size_hint": "~0.6 GB",
+      "source_url": "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF",
+      "status": "",
+      "user_added": false
+    },
+    {
+      "availability_status": "needs_setup",
+      "catalog_source": "recommended",
+      "description": "Balanced starter option with stronger quality before moving to larger models.",
+      "download_url": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q8_0.gguf",
+      "enabled": false,
+      "favorite": false,
+      "file": "Qwen3-1.7B-Q8_0.gguf",
+      "installed": false,
+      "model_id": "Qwen/Qwen3-1.7B-GGUF",
+      "observed_success": false,
+      "product_name": "Qwen3 1.7B (GGUF)",
+      "quant": "Q8_0",
+      "size_hint": "1.8 GB",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF",
+      "status": "",
+      "user_added": false
+    }
+  ]
+}

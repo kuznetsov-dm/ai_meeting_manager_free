@@ -1,0 +1,73 @@
+{
+  "provider": {
+    "name": "Z.ai",
+    "description": "GLM model provider (OpenAI-compatible API)."
+  },
+  "api_base": "https://api.z.ai/api/paas/v4",
+  "models": [
+    {
+      "id": "glm-4.5-flash",
+      "name": "Z.ai 4.5 Flash",
+      "product_name": "Z.ai 4.5 Flash",
+      "source_url": "https://docs.z.ai/guides/llm/glm-4.5glm-4-5-flash",
+      "description": "Тип: базовая флагманская модель. Характеристики: окно контекста 128k, высокая скорость генерации. Плюсы: очень стабильный русский язык, хорошо понимает структуру диалога и роли спикеров. Минусы: на бесплатном тарифе возможны лимиты по запросам в минуту.",
+      "highlights": "Стабильный русский язык, длинный контекст, быстрый cloud summary",
+      "features": ["text-generation", "summarization", "chat"],
+      "capabilities": ["text", "markdown"],
+      "context_window": 128000,
+      "pricing": "free",
+      "provider": "z.ai",
+      "size_hint": "Free API, 128k context"
+    },
+    {
+      "id": "glm-4.7-flash",
+      "name": "Z.ai 4.7 Flash",
+      "product_name": "Z.ai 4.7 Flash",
+      "source_url": "https://docs.z.ai/guides/llm/glm-4.7glm-4-7-flash",
+      "description": "Тип: экспериментальная сверхмощная модель. Характеристики: расширенное окно контекста 200k+ токенов. Плюсы: выдерживает очень длинные стратегические сессии и даёт более сильное рассуждение. Минусы: в часы пик возможны задержки, иногда требует более точного промптинга.",
+      "highlights": "Максимальная мощность на бесплатном API, 200k+ контекст",
+      "features": ["text-generation", "summarization", "chat"],
+      "capabilities": ["text", "markdown"],
+      "context_window": 200000,
+      "pricing": "free",
+      "provider": "z.ai",
+      "size_hint": "Free API, 200k+ context"
+    }
+  ],
+  "requirements": {
+    "api_key": "Get from https://open.bigmodel.cn/usercenter/apikeys",
+    "api_key_env": "AIMN_ZAI_API_KEY"
+  },
+  "features": [
+    "free_tier",
+    "no_server_required",
+    "cloud_based"
+  ],
+  "capabilities": {
+    "alias_code_policy": {
+      "provider_code": "za",
+      "model_codes": {
+        "glm-4.7-flash": "g47f",
+        "glm-4.5-flash": "g45f"
+      }
+    },
+    "health": {
+      "required_settings": [
+        {
+          "label": "API key",
+          "keys": ["api_key"]
+        }
+      ]
+    },
+    "models": {
+      "storage": "online",
+      "managed_actions": {
+        "list": "list_models"
+      }
+    }
+  },
+  "limitations": [
+    "Rate limits apply on free tier",
+    "May require account verification"
+  ]
+}

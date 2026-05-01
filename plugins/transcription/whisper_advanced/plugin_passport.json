@@ -1,0 +1,139 @@
+{
+  "provider": {
+    "name": "Whisper Advanced",
+    "description": "Local whisper.cpp transcription with managed model downloads."
+  },
+  "models": [
+    {
+      "id": "tiny",
+      "name": "Whisper Tiny",
+      "description": "Fastest multilingual model for quick drafts. Lowest accuracy.",
+      "file": "ggml-tiny.bin",
+      "size_hint": "75 MB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin"
+    },
+    {
+      "id": "base",
+      "name": "Whisper Base",
+      "description": "Small multilingual model for rough transcripts on weak hardware.",
+      "file": "ggml-base.bin",
+      "size_hint": "145 MB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin"
+    },
+    {
+      "id": "small",
+      "name": "Whisper Small",
+      "description": "Balanced default for local meeting transcription.",
+      "file": "ggml-small.bin",
+      "size_hint": "466 MB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin"
+    },
+    {
+      "id": "small-q8_0",
+      "name": "Whisper Small Q8_0",
+      "description": "Quantized Small model. Smaller download with near-Small quality.",
+      "file": "ggml-small-q8_0.bin",
+      "size_hint": "252 MB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small-q8_0.bin"
+    },
+    {
+      "id": "medium",
+      "name": "Whisper Medium",
+      "description": "Higher accuracy multilingual model for important meetings.",
+      "file": "ggml-medium.bin",
+      "size_hint": "1.5 GB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin"
+    },
+    {
+      "id": "medium-q8_0",
+      "name": "Whisper Medium Q8_0",
+      "description": "Quantized Medium model for lower disk and memory usage.",
+      "file": "ggml-medium-q8_0.bin",
+      "size_hint": "785 MB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium-q8_0.bin"
+    },
+    {
+      "id": "large-v3-turbo",
+      "name": "Whisper Large v3 Turbo",
+      "description": "Recommended high-quality multilingual model with better speed than Large v3.",
+      "file": "ggml-large-v3-turbo.bin",
+      "size_hint": "1.6 GB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin"
+    },
+    {
+      "id": "large-v3-turbo-q5_0",
+      "name": "Whisper Large v3 Turbo Q5_0",
+      "description": "Compact quantized Turbo model for a smaller local install.",
+      "file": "ggml-large-v3-turbo-q5_0.bin",
+      "size_hint": "574 MB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin"
+    },
+    {
+      "id": "large-v3-turbo-q8_0",
+      "name": "Whisper Large v3 Turbo Q8_0",
+      "description": "Quantized Turbo model with a strong quality/size tradeoff.",
+      "file": "ggml-large-v3-turbo-q8_0.bin",
+      "size_hint": "874 MB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q8_0.bin"
+    },
+    {
+      "id": "large-v3",
+      "name": "Whisper Large v3",
+      "description": "Highest-quality current multilingual model. Slowest and largest option.",
+      "file": "ggml-large-v3.bin",
+      "size_hint": "3.1 GB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin"
+    },
+    {
+      "id": "large-v3-q5_0",
+      "name": "Whisper Large v3 Q5_0",
+      "description": "Quantized Large v3 model for lower storage and memory use.",
+      "file": "ggml-large-v3-q5_0.bin",
+      "size_hint": "1.1 GB",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-q5_0.bin"
+    }
+  ],
+  "capabilities": {
+    "runtime": {
+      "local_binary": {
+        "setting_key": "whisper_path",
+        "env_key": "AIMN_WHISPER_PATH",
+        "fallback": "bin/whisper_cpp/whisper-cli",
+        "label": "Whisper binary"
+      }
+    },
+    "ui": {
+      "transcription": {
+        "local_provider": true,
+        "preset_overrides": true,
+        "order": 10
+      }
+    },
+    "models": {
+      "storage": "local",
+      "allow_custom_inputs": false,
+      "show_available_selector": false,
+      "local_files": {
+        "root_setting": "models_dir",
+        "default_root": "models/whisper",
+        "glob": "ggml-*.bin"
+      },
+      "managed_actions": {
+        "list": "list_models",
+        "pull": "pull_model",
+        "remove": "remove_model"
+      }
+    }
+  }
+}

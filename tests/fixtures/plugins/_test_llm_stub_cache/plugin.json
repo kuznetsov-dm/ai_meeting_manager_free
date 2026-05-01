@@ -1,0 +1,13 @@
+{
+  "id": "llm.test_stub_cache",
+  "name": "Test LLM Stub (Cache)",
+  "product_name": "Test LLM Stub (Cache)",
+  "highlights": "",
+  "description": "",
+  "version": "0.1.0",
+  "api_version": "1",
+  "entrypoint": "_test_llm_stub_cache.llm_stub:Plugin",
+  "hooks": [{"name": "derive.after_postprocess", "mode": "optional", "priority": 100}],
+  "artifacts": ["summary"],
+  "ui": {"tabs": [], "widgets": []}
+}

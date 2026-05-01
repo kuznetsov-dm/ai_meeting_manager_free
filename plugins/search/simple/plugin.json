@@ -1,0 +1,26 @@
+{
+  "id": "search.simple",
+  "name": "Simple Search (FTS)",
+  "product_name": "Simple Search",
+  "highlights": "Мгновенно находит нужное в истории встреч по ключевым словам.",
+  "description": "Быстрый полнотекстовый поиск по артефактам встреч. Магия не в моделях, а в скорости: вместо ручного пролистывания вы за секунды находите фрагменты, решения и формулировки и сразу переходите к источнику.",
+  "ui_stage": "service",
+  "tags": ["Поиск", "Быстро"],
+  "capabilities": { "global_search": { "mode": "simple" } },
+  "howto": [
+    "Откройте Meetings.",
+    "Введите запрос в глобальный поиск.",
+    "Откройте результат, чтобы перейти к источнику."
+  ],
+  "version": "1.0.0",
+  "api_version": "1",
+  "ui_hidden": true,
+  "entrypoint": "plugins.search.simple.simple:Plugin",
+  "hooks": [],
+  "artifacts": [],
+  "ui": {
+    "tabs": [],
+    "widgets": []
+  }
+}
+

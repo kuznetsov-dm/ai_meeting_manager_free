@@ -1,0 +1,118 @@
+{
+  "provider": {
+    "name": "Ollama",
+    "description": "Local LLM server with support for multiple open-source models",
+    "website": "https://ollama.com",
+    "documentation": "https://github.com/ollama/ollama",
+    "license": "Apache 2.0"
+  },
+  "models": [
+    {
+      "model_id": "llama3.2",
+      "name": "Llama 3.2",
+      "description": "Meta's latest Llama model, efficient and capable",
+      "size": "~2GB",
+      "language": ["en", "multilingual"],
+      "suitability": ["Summaries", "General tasks"]
+    },
+    {
+      "model_id": "llama3.2:8b",
+      "name": "Llama 3.2 8B",
+      "description": "Llama 3.2 with 8 billion parameters",
+      "size": "~5GB",
+      "language": ["en", "multilingual"],
+      "suitability": ["Detailed summaries", "Analysis"]
+    },
+    {
+      "model_id": "qwen2.5",
+      "name": "Qwen 2.5",
+      "description": "Alibaba's Qwen 2.5 model",
+      "size": "~2GB",
+      "language": ["zh", "en", "multilingual"],
+      "suitability": ["Summaries", "Translation"]
+    },
+    {
+      "model_id": "mistral",
+      "name": "Mistral",
+      "description": "Mistral AI's efficient open-source model",
+      "size": "~4GB",
+      "language": ["en", "multilingual"],
+      "suitability": ["Summaries", "General tasks"]
+    },
+    {
+      "model_id": "gemma2",
+      "name": "Gemma 2",
+      "description": "Google's Gemma 2 open model",
+      "size": "~9GB",
+      "language": ["en", "multilingual"],
+      "suitability": ["Detailed summaries", "Analysis"]
+    },
+    {
+      "model_id": "gemma2:2b",
+      "name": "Gemma 2 2B",
+      "description": "Observed successful summary generation in cross-machine logs from March 18, 2026. Good lightweight local Ollama option.",
+      "size": "~1.6GB",
+      "language": ["en", "multilingual"],
+      "suitability": ["Fast summaries", "Low-memory setups"]
+    },
+    {
+      "model_id": "gemini-3-flash-preview:latest",
+      "name": "Gemini 3 Flash Preview",
+      "description": "Observed successful summary generation in imported cross-machine logs on April 9, 2026.",
+      "language": ["en", "multilingual"],
+      "suitability": ["Fast summaries", "Preview model"]
+    },
+    {
+      "model_id": "deepseek-v3.1:671b-cloud",
+      "name": "DeepSeek V3.1 671B Cloud",
+      "description": "Observed successful summary generation in imported cross-machine logs on April 9, 2026.",
+      "language": ["en", "multilingual"],
+      "suitability": ["Long summaries", "Cloud Ollama backend"]
+    },
+    {
+      "model_id": "qwen3-vl:235b-cloud",
+      "name": "Qwen3 VL 235B Cloud",
+      "description": "Observed successful summary generation in imported cross-machine logs on April 9, 2026.",
+      "language": ["en", "multilingual"],
+      "suitability": ["Long summaries", "Cloud Ollama backend"]
+    }
+  ],
+  "features": [
+    "Local processing - no data sent to external servers",
+    "Multiple model support",
+    "Automatic model downloading",
+    "Server management (start/stop/check)",
+    "Model management (list/pull/remove)",
+    "Custom system prompts",
+    "Configurable temperature and token limits"
+  ],
+  "capabilities": {
+    "alias_code_policy": {
+      "provider_code": "ol"
+    },
+    "health": {
+      "server": {
+        "auto_start_action": "start_server"
+      },
+      "models": {
+        "require_installed_list": true
+      }
+    },
+    "models": {
+      "storage": "local",
+      "selection_requires_installed": true,
+      "managed_actions": {
+        "list": "list_models",
+        "pull": "pull_model",
+        "remove": "remove_model",
+        "test": "test_model",
+        "test_connection": "test_connection"
+      }
+    }
+  },
+  "requirements": [
+    "Ollama server installed and running",
+    "At least 8GB RAM for larger models",
+    "Sufficient disk space for model downloads (2-20GB depending on model)"
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "provider": {
+    "name": "OpenRouter",
+    "description": "Unified API for top-tier LLM providers and models."
+  },
+  "models": [
+    {
+      "id": "openrouter/free",
+      "name": "Free Models Router",
+      "product_name": "Free Models Router",
+      "source_url": "https://openrouter.ai/models/openrouter/free",
+      "context_window": 200000,
+      "highlights": "OpenRouter-managed free model router",
+      "description": "Routes requests to an available free model. Use as the first OpenRouter fallback when named free models are rate-limited.",
+      "size_hint": "Cloud API"
+    },
+    {
+      "id": "openai/gpt-oss-20b:free",
+      "name": "GPT OSS 20B (free)",
+      "product_name": "GPT OSS 20B (free)",
+      "source_url": "https://openrouter.ai/models/openai/gpt-oss-20b:free",
+      "context_window": 131072,
+      "highlights": "Free general-purpose fallback",
+      "description": "Free OpenAI OSS model available through OpenRouter. Useful as a named fallback when the free router is unavailable.",
+      "size_hint": "Cloud API"
+    },
+    {
+      "id": "liquid/lfm-2.5-1.2b-instruct:free",
+      "name": "LFM2.5 1.2B Instruct (free)",
+      "product_name": "LFM2.5 1.2B Instruct (free)",
+      "source_url": "https://openrouter.ai/models/liquid/lfm-2.5-1.2b-instruct:free",
+      "context_window": 32768,
+      "highlights": "Fast free lightweight fallback",
+      "description": "Free lightweight instruct model available through OpenRouter. Best used as a fast availability fallback, not as the highest-quality summarizer.",
+      "size_hint": "Cloud API"
+    },
+    {
+      "id": "inclusionai/ling-2.6-flash:free",
+      "name": "Ling 2.6 Flash (free)",
+      "product_name": "Ling 2.6 Flash (free)",
+      "source_url": "https://openrouter.ai/models/inclusionai/ling-2.6-flash:free",
+      "context_window": 262144,
+      "highlights": "Free fast fallback",
+      "description": "Free fast model available through OpenRouter. Keep as an optional fallback because quality varies on Russian meeting summaries.",
+      "size_hint": "Cloud API"
+    },
+    {
+      "id": "qwen/qwen3-next-80b-a3b-instruct:free",
+      "name": "Qwen3 Next 80B A3B Instruct (free)",
+      "product_name": "Qwen3 Next 80B A3B Instruct (free)",
+      "source_url": "https://openrouter.ai/models/qwen/qwen3-next-80b-a3b-instruct:free",
+      "context_window": 262144,
+      "highlights": "Free Qwen model, often rate-limited",
+      "description": "Free Qwen model available through OpenRouter. Keep in the catalog, but do not use as the default pipeline model while upstream returns HTTP 429.",
+      "size_hint": "Cloud API"
+    },
+    {
+      "id": "qwen/qwen3-coder:free",
+      "name": "Qwen3 Coder (free)",
+      "product_name": "Qwen3 Coder (free)",
+      "source_url": "https://openrouter.ai/models/qwen/qwen3-coder:free",
+      "context_window": 262000,
+      "highlights": "Free Qwen coding model, often rate-limited",
+      "description": "Free Qwen coding-oriented model available through OpenRouter. Keep in the catalog, but do not use as the default pipeline model while upstream returns HTTP 429.",
+      "size_hint": "Cloud API"
+    }
+  ],
+  "capabilities": {
+    "alias_code_policy": {
+      "provider_code": "or"
+    },
+    "health": {
+      "required_settings": [
+        {
+          "label": "API key",
+          "keys": ["api_key", "user_api_key", "paid_api_key", "user_key", "paid_key"]
+        }
+      ]
+    },
+    "models": {
+      "storage": "online",
+      "managed_actions": {
+        "list": "list_models"
+      }
+    }
+  }
+}

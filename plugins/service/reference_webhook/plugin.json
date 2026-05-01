@@ -1,0 +1,34 @@
+{
+  "id": "service.reference_webhook",
+  "name": "Webhook Ingest (Reference)",
+  "product_name": "Webhook Ingest (Reference)",
+  "highlights": "Референс-интеграция: отправка результатов встречи во внешний webhook.",
+  "description": "Демонстрационный сервисный плагин для интеграций через HTTP webhook. Магия в простоте: берете как шаблон, заменяете URL/формат, подключаете свою инфраструктуру и получаете автоматическую доставку итогов.",
+  "ui_stage": "service",
+  "tags": ["Webhook", "Интеграция"],
+  "howto": [
+    "Включите плагин.",
+    "Настройте webhook-параметры в Settings (если доступны).",
+    "Запустите встречу и проверьте доставку результатов."
+  ],
+  "icon_key": "service",
+  "version": "0.1.0",
+  "ui_hidden": true,
+  "api_version": "1",
+  "entrypoint": "plugins.service.reference_webhook.reference_webhook:Plugin",
+  "hooks": [
+    {
+      "name": "derive.after_summary",
+      "mode": "optional",
+      "priority": 100
+    }
+  ],
+  "artifacts": [
+    "index"
+  ],
+  "ui": {
+    "tabs": [],
+    "widgets": []
+  }
+}
+

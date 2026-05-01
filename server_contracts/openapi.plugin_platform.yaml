@@ -1,0 +1,611 @@
+openapi: 3.1.0
+info:
+  title: AIMN Plugin Platform API
+  version: 0.1.0-draft
+  summary: Draft API for plugin catalog, signed entitlements, package delivery, and admin publication
+  description: |
+    This OpenAPI draft aligns with the desktop contracts used by AI Meeting Manager.
+
+    The desktop app consumes:
+    - catalog snapshots
+    - signed entitlement snapshots
+    - signed package metadata
+
+    Runtime execution stays local. The backend only publishes discoverability, access, and delivery metadata.
+servers:
+  - url: https://api.example.com
+    description: Production
+  - url: https://staging-api.example.com
+    description: Staging
+tags:
+  - name: Catalog
+  - name: Entitlements
+  - name: Packages
+  - name: Admin
+security:
+  - BearerAuth: []
+paths:
+  /v1/catalog/plugins:
+    get:
+      tags: [Catalog]
+      summary: Get plugin catalog snapshot
+      description: Returns the current plugin catalog snapshot filtered by client compatibility context.
+      operationId: getPluginCatalog
+      security:
+        - {}
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: app_id
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: app_version
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: release_profile
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: platform
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: arch
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: locale
+          schema:
+            type: string
+          required: false
+      responses:
+        "200":
+          description: Catalog snapshot
+          headers:
+            ETag:
+              schema:
+                type: string
+            Cache-Control:
+              schema:
+                type: string
+            X-Catalog-Version:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSnapshot"
+        "400":
+          $ref: "#/components/responses/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/entitlements/current:
+    get:
+      tags: [Entitlements]
+      summary: Get signed entitlement snapshot for the current subject
+      operationId: getCurrentEntitlements
+      responses:
+        "200":
+          description: Signed entitlement snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EntitlementSnapshot"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "403":
+          $ref: "#/components/responses/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/entitlements/import:
+    post:
+      tags: [Entitlements]
+      summary: Import external license proof into normalized entitlement state
+      description: Admin or support workflow. Not intended for direct desktop public use.
+      operationId: importEntitlements
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EntitlementImportRequest"
+      responses:
+        "202":
+          description: Import accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AsyncAcceptedResponse"
+        "400":
+          $ref: "#/components/responses/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "403":
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/packages/{plugin_id}/{version}:
+    get:
+      tags: [Packages]
+      summary: Resolve package download for a concrete plugin version
+      operationId: resolvePackage
+      parameters:
+        - $ref: "#/components/parameters/PluginId"
+        - $ref: "#/components/parameters/Version"
+      responses:
+        "200":
+          description: Direct package metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PackageResolveResponse"
+        "302":
+          description: Redirect to immutable package artifact URL
+        "404":
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/packages/{plugin_id}/{version}/manifest:
+    get:
+      tags: [Packages]
+      summary: Get package manifest for a concrete plugin version
+      operationId: getPackageManifest
+      parameters:
+        - $ref: "#/components/parameters/PluginId"
+        - $ref: "#/components/parameters/Version"
+      responses:
+        "200":
+          description: Package manifest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PackageManifest"
+        "404":
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/admin/catalog/publish:
+    post:
+      tags: [Admin]
+      summary: Publish a new catalog snapshot
+      operationId: publishCatalog
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogPublishRequest"
+      responses:
+        "202":
+          description: Publication accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AsyncAcceptedResponse"
+        "400":
+          $ref: "#/components/responses/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "403":
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/admin/entitlements/recompute:
+    post:
+      tags: [Admin]
+      summary: Recompute effective entitlements for a subject
+      operationId: recomputeEntitlements
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EntitlementRecomputeRequest"
+      responses:
+        "202":
+          description: Recompute accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AsyncAcceptedResponse"
+        "400":
+          $ref: "#/components/responses/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "403":
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/admin/signing/rotate-key:
+    post:
+      tags: [Admin]
+      summary: Rotate publisher signing key
+      operationId: rotateSigningKey
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SigningKeyRotationRequest"
+      responses:
+        "201":
+          description: New signing key created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SigningKeyRotationResponse"
+        "400":
+          $ref: "#/components/responses/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "403":
+          $ref: "#/components/responses/ErrorResponse"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    PluginId:
+      in: path
+      name: plugin_id
+      required: true
+      schema:
+        type: string
+        pattern: "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"
+    Version:
+      in: path
+      name: version
+      required: true
+      schema:
+        type: string
+        minLength: 1
+  responses:
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    CatalogSnapshot:
+      type: object
+      required: [catalog_version, plugins]
+      properties:
+        catalog_version:
+          type: string
+        app_id:
+          type: string
+        release_profile:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+        plugins:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogPluginEntry"
+      additionalProperties: false
+    CatalogPluginEntry:
+      type: object
+      required:
+        - plugin_id
+        - version
+        - api_version
+        - stage_id
+        - owner_type
+        - publisher_id
+        - pricing_model
+        - catalog_enabled
+      properties:
+        plugin_id:
+          type: string
+          pattern: "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"
+        version:
+          type: string
+        api_version:
+          type: string
+          enum: ["1"]
+        stage_id:
+          type: string
+          enum: [transcription, llm_processing, management, service, other]
+        owner_type:
+          type: string
+          enum: [first_party, third_party]
+        publisher_id:
+          type: string
+          pattern: "^[a-z][a-z0-9_\\-]*$"
+        pricing_model:
+          type: string
+          enum: [free, one_time, subscription]
+        requires_platform_edition:
+          type: boolean
+          default: false
+        catalog_enabled:
+          type: boolean
+        compatible_app_versions:
+          type: array
+          items:
+            type: string
+        download_url:
+          type: string
+        checksum_sha256:
+          type: string
+          pattern: "^[a-fA-F0-9]{64}$"
+        signature:
+          type: string
+        signature_algorithm:
+          type: string
+          enum: [rsa-sha256]
+        signing_key_id:
+          type: string
+        manifest_url:
+          type: string
+        product_name:
+          type: string
+        name:
+          type: string
+        highlights:
+          type: string
+        description:
+          type: string
+        provider_name:
+          type: string
+        provider_description:
+          type: string
+        default_visibility:
+          type: string
+          enum: [visible, hidden]
+        tags:
+          type: array
+          items:
+            type: string
+        howto:
+          type: array
+          items:
+            type: string
+        billing_product_id:
+          type: string
+        fallback_plugin_id:
+          type: string
+      additionalProperties: false
+    EntitlementSnapshot:
+      type: object
+      required: [platform_edition]
+      properties:
+        subject_id:
+          type: string
+        edition:
+          type: string
+        issued_at:
+          type: string
+          format: date-time
+        platform_edition:
+          $ref: "#/components/schemas/PlatformEntitlement"
+        plugins:
+          type: object
+          propertyNames:
+            pattern: "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"
+          additionalProperties:
+            $ref: "#/components/schemas/PluginEntitlement"
+        _meta:
+          $ref: "#/components/schemas/EntitlementSignatureMeta"
+      additionalProperties: false
+    PlatformEntitlement:
+      type: object
+      required: [enabled, status]
+      properties:
+        enabled:
+          type: boolean
+        status:
+          type: string
+          enum: [active, inactive, grace, revoked, expired]
+        expires_at:
+          type:
+            - string
+            - "null"
+          format: date-time
+      additionalProperties: true
+    PluginEntitlement:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [active, inactive, grace, expired, revoked]
+        expires_at:
+          type:
+            - string
+            - "null"
+          format: date-time
+        grace_until:
+          type:
+            - string
+            - "null"
+          format: date-time
+        billing_product_id:
+          type: string
+      additionalProperties: true
+    EntitlementSignatureMeta:
+      type: object
+      required: [publisher_id, signature_algorithm, signature]
+      properties:
+        publisher_id:
+          type: string
+          pattern: "^[a-z][a-z0-9_\\-]*$"
+        signature_algorithm:
+          type: string
+          enum: [rsa-sha256]
+        signing_key_id:
+          type: string
+        signature:
+          type: string
+      additionalProperties: false
+    PackageManifest:
+      type: object
+      required: [plugin_id, version, api_version, entrypoint, files]
+      properties:
+        plugin_id:
+          type: string
+          pattern: "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"
+        version:
+          type: string
+        api_version:
+          type: string
+          enum: ["1"]
+        entrypoint:
+          type: string
+          pattern: "^[A-Za-z_][A-Za-z0-9_\\.]*:[A-Za-z_][A-Za-z0-9_]*$"
+        publisher_id:
+          type: string
+          pattern: "^[a-z][a-z0-9_\\-]*$"
+        package_checksum_sha256:
+          type: string
+          pattern: "^[a-fA-F0-9]{64}$"
+        signature:
+          type: string
+        signature_algorithm:
+          type: string
+          enum: [rsa-sha256]
+        signing_key_id:
+          type: string
+        files:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/PackageFileEntry"
+      additionalProperties: false
+    PackageFileEntry:
+      type: object
+      required: [path, sha256]
+      properties:
+        path:
+          type: string
+        sha256:
+          type: string
+          pattern: "^[a-fA-F0-9]{64}$"
+        size_bytes:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+    PackageResolveResponse:
+      type: object
+      required: [plugin_id, version]
+      properties:
+        plugin_id:
+          type: string
+        version:
+          type: string
+        download_url:
+          type: string
+        checksum_sha256:
+          type: string
+        signature:
+          type: string
+        signature_algorithm:
+          type: string
+          enum: [rsa-sha256]
+        signing_key_id:
+          type: string
+      additionalProperties: false
+    CatalogPublishRequest:
+      type: object
+      required: [catalog_version, plugins]
+      properties:
+        catalog_version:
+          type: string
+        app_id:
+          type: string
+        release_profile:
+          type: string
+        plugins:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogPluginEntry"
+      additionalProperties: false
+    EntitlementImportRequest:
+      type: object
+      required: [subject_id, source_system, source_reference]
+      properties:
+        subject_id:
+          type: string
+        source_system:
+          type: string
+        source_reference:
+          type: string
+        raw_payload:
+          type: object
+          additionalProperties: true
+      additionalProperties: false
+    EntitlementRecomputeRequest:
+      type: object
+      required: [subject_id]
+      properties:
+        subject_id:
+          type: string
+        reason:
+          type: string
+      additionalProperties: false
+    SigningKeyRotationRequest:
+      type: object
+      required: [publisher_id, algorithm]
+      properties:
+        publisher_id:
+          type: string
+          pattern: "^[a-z][a-z0-9_\\-]*$"
+        algorithm:
+          type: string
+          enum: [rsa-sha256]
+        activate_immediately:
+          type: boolean
+          default: true
+      additionalProperties: false
+    SigningKeyRotationResponse:
+      type: object
+      required: [publisher_id, key_id, algorithm, status]
+      properties:
+        publisher_id:
+          type: string
+        key_id:
+          type: string
+        algorithm:
+          type: string
+        status:
+          type: string
+        activated_at:
+          type: string
+          format: date-time
+      additionalProperties: false
+    AsyncAcceptedResponse:
+      type: object
+      required: [status, job_id]
+      properties:
+        status:
+          type: string
+          enum: [accepted]
+        job_id:
+          type: string
+        message:
+          type: string
+      additionalProperties: false
+    ErrorResponse:
+      type: object
+      required: [status, code, message]
+      properties:
+        status:
+          type: string
+          enum: [error]
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+      additionalProperties: false

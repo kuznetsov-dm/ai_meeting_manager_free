@@ -1,0 +1,31 @@
+{
+  "id": "service.meeting_topic_suggester",
+  "name": "Meeting Topic Suggester",
+  "product_name": "Meeting Topic Suggester",
+  "highlights": "Offers smart title suggestions from AI artifacts right inside Rename.",
+  "description": "Extracts meeting themes from AI outputs and turns them into clean, ready-to-use titles. Pick one suggestion, tweak it if needed, and save.",
+  "ui_stage": "service",
+  "tags": ["Rename", "AI"],
+  "capabilities": {
+    "meeting_rename": {
+      "topic_suggestions": {
+        "action": "suggest_topics"
+      }
+    }
+  },
+  "howto": [
+    "Open Meetings and click Rename on any meeting tile.",
+    "Pick one of the suggested topics or type your own title.",
+    "Save to apply the new meeting title."
+  ],
+  "version": "0.1.0",
+  "api_version": "1",
+  "entrypoint": "plugins.service.meeting_topic_suggester.meeting_topic_suggester:Plugin",
+  "hooks": [],
+  "artifacts": [],
+  "ui": {
+    "tabs": [],
+    "widgets": []
+  }
+}
+

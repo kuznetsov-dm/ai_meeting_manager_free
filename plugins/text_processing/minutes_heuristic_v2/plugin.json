@@ -1,0 +1,52 @@
+{
+  "id": "text_processing.minutes_heuristic_v2",
+  "name": "Minutes Heuristic v2",
+  "product_name": "Minutes Heuristic v2",
+  "highlights": "Превращает разговор во “minutes”: решения, задачи, проекты, вопросы, риски.",
+  "description": "Делает структурированный minutes-документ в строгом формате, который удобно читать и легко парсить дальше. Небольшая AI-магия там, где она полезна: гибрид эвристик и ML помогает извлекать действия и смысл без ручной разметки.",
+  "ui_stage": "llm_processing",
+  "capabilities": {
+    "alias_code_policy": {
+      "provider_code": "mh",
+      "strip_model_tokens": ["intfloat", "cointegrated", "multilingual"],
+      "model_codes": {
+        "intfloat/multilingual-e5-base": "e5b",
+        "intfloat/multilingual-e5-small": "e5s",
+        "cointegrated/rubert-tiny2": "rb2"
+      }
+    },
+    "ui": {
+      "text_processing": {
+        "group": "essentials"
+      }
+    }
+  },
+  "tags": ["Minutes", "Структура"],
+  "howto": [
+    "Откройте Settings > AI Processing.",
+    "Выберите Minutes Heuristic v2 (если доступно как вариант/провайдер).",
+    "Запустите встречу и проверьте edited/minutes результат."
+  ],
+  "version": "1.1.0",
+  "api_version": "1",
+  "entrypoint": "plugins.text_processing.minutes_heuristic_v2.minutes_heuristic_v2:Plugin",
+  "hooks": [
+    {
+      "name": "postprocess.after_transcribe",
+      "mode": "optional",
+      "priority": 140
+    },
+    {
+      "name": "derive.after_postprocess",
+      "mode": "optional",
+      "priority": 140
+    }
+  ],
+  "ui_schema": {
+    "settings": []
+  },
+  "artifacts": [
+    "edited"
+  ]
+}
+

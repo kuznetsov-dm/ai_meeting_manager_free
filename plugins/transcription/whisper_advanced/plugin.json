@@ -1,0 +1,67 @@
+{
+  "id": "transcription.whisperadvanced",
+  "name": "Whisper Advanced",
+  "product_name": "Whisper Advanced Local Transcription",
+  "highlights": "Local whisper.cpp transcription with managed model downloads, VAD, and conservative decode defaults.",
+  "description": "Runs whisper.cpp locally to produce transcripts. The app manages Whisper model downloads and removals from model cards; advanced decode and path knobs use safe plugin defaults.",
+  "ui_stage": "transcription",
+  "tags": ["ASR", "Local"],
+  "howto": [
+    "Open Settings > Transcription > Whisper Advanced.",
+    "Download a Whisper model from the model cards.",
+    "Select installed models in the Transcription drawer before running a meeting."
+  ],
+  "version": "0.1.0",
+  "api_version": "1",
+  "entrypoint": "plugins.transcription.whisper_advanced.whisper_advanced:Plugin",
+  "hooks": [
+    {
+      "name": "transcribe.run",
+      "mode": "optional",
+      "priority": 90
+    }
+  ],
+  "ui_schema": {
+    "settings": [
+      {
+        "key": "language_mode",
+        "label": "Language Mode",
+        "value": "auto",
+        "options": [
+          { "label": "Auto", "value": "auto" },
+          { "label": "None", "value": "none" },
+          { "label": "Forced", "value": "forced" }
+        ]
+      },
+      {
+        "key": "language_code",
+        "label": "Language Code",
+        "value": "",
+        "options": [
+          { "label": "(not set)", "value": "" },
+          { "label": "English (en)", "value": "en" },
+          { "label": "Russian (ru)", "value": "ru" },
+          { "label": "Ukrainian (uk)", "value": "uk" },
+          { "label": "German (de)", "value": "de" },
+          { "label": "French (fr)", "value": "fr" },
+          { "label": "Spanish (es)", "value": "es" },
+          { "label": "Italian (it)", "value": "it" },
+          { "label": "Portuguese (pt)", "value": "pt" },
+          { "label": "Polish (pl)", "value": "pl" },
+          { "label": "Turkish (tr)", "value": "tr" },
+          { "label": "Arabic (ar)", "value": "ar" },
+          { "label": "Hindi (hi)", "value": "hi" },
+          { "label": "Chinese (zh)", "value": "zh" },
+          { "label": "Japanese (ja)", "value": "ja" },
+          { "label": "Korean (ko)", "value": "ko" }
+        ]
+      },
+      { "key": "two_pass", "label": "Two Pass Language Detect", "value": "false" }
+    ]
+  },
+  "artifacts": ["transcript", "asr_segments_json", "asr_diagnostics_json"],
+  "ui": {
+    "tabs": [],
+    "widgets": []
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "catalog_version": "2026-03-13",
+  "app_id": "ai_meeting_manager",
+  "release_profile": "default",
+  "published_at": "2026-03-13T10:00:00Z",
+  "plugins": [
+    {
+      "plugin_id": "service.partner_notes",
+      "version": "1.2.0",
+      "api_version": "1",
+      "stage_id": "service",
+      "owner_type": "third_party",
+      "publisher_id": "partner",
+      "pricing_model": "subscription",
+      "requires_platform_edition": true,
+      "catalog_enabled": true,
+      "compatible_app_versions": [
+        ">=0.1.0"
+      ],
+      "download_url": "https://cdn.example/plugins/service.partner_notes-1.2.0.zip",
+      "checksum_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "signature": "base64-signature",
+      "signature_algorithm": "rsa-sha256",
+      "signing_key_id": "primary",
+      "manifest_url": "https://cdn.example/plugins/service.partner_notes-1.2.0-manifest.json",
+      "product_name": "Partner Notes",
+      "name": "Partner Notes",
+      "highlights": "Syncs meeting outputs into an external notes workspace.",
+      "description": "Catalog-delivered service plugin.",
+      "provider_name": "Partner Inc",
+      "provider_description": "Third-party collaboration provider",
+      "default_visibility": "visible",
+      "tags": [
+        "notes",
+        "integration"
+      ],
+      "howto": [
+        "Sign in to your Partner account.",
+        "Choose destination workspace.",
+        "Enable export from Meetings."
+      ],
+      "billing_product_id": "partner-notes-pro",
+      "fallback_plugin_id": "service.management_index"
+    }
+  ]
+}

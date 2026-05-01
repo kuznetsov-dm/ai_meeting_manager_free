@@ -1,0 +1,31 @@
+{
+  "release_id": "core_free",
+  "app_id": "ai_meeting_manager",
+  "description": "Free base release with local transcription, local llama.cpp, and semantic processing.",
+  "bundled_plugins": [
+    "transcription.whisperadvanced",
+    "llm.llama_cli",
+    "text_processing.minutes_heuristic_v2",
+    "text_processing.semantic_refiner"
+  ],
+  "removed_plugins": [
+    "transcription.whispernext",
+    "llm.openrouter",
+    "llm.zai",
+    "llm.ollama",
+    "llm.deepseek",
+    "management.unified",
+    "service.management_index",
+    "service.meeting_topic_suggester",
+    "service.prompt_manager"
+  ],
+  "disabled_stages": [
+    "management",
+    "service"
+  ],
+  "ui_flags": {
+    "show_plugin_marketplace": false,
+    "allow_plugin_package_install": false,
+    "show_management_tab": false
+  }
+}

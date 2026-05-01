@@ -1,0 +1,10 @@
+{
+  "baseline_plugin_ids": [
+    "transcription.whisperadvanced",
+    "llm.llama_cli",
+    "text_processing.minutes_heuristic_v2",
+    "text_processing.semantic_refiner"
+  ],
+  "default_optional_requires_platform_edition": false,
+  "plugin_overrides": {}
+}

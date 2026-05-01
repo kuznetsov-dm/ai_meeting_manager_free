@@ -1,0 +1,13 @@
+{
+  "id": "transcription.test_resilience",
+  "name": "Test Transcription Resilience",
+  "product_name": "Test Transcription Resilience",
+  "highlights": "",
+  "description": "",
+  "version": "0.1.0",
+  "api_version": "1",
+  "entrypoint": "_test_transcription_resilience.transcription_mock:Plugin",
+  "hooks": [{"name": "transcribe.run", "mode": "optional", "priority": 100}],
+  "artifacts": ["transcript"],
+  "ui": {"tabs": [], "widgets": []}
+}

@@ -1,0 +1,52 @@
+{
+  "baseline_plugin_ids": [
+    "transcription.whisperadvanced",
+    "text_processing.minutes_heuristic_v2",
+    "llm.ollama",
+    "management.unified",
+    "service.management_index"
+  ],
+  "default_optional_requires_platform_edition": true,
+  "plugin_overrides": {
+    "transcription.whisperadvanced": {
+      "catalog_enabled": true
+    },
+    "llm.openrouter": {
+      "catalog_enabled": true
+    },
+    "llm.zai": {
+      "catalog_enabled": true
+    },
+    "llm.deepseek": {
+      "catalog_enabled": true
+    },
+    "llm.llama_cli": {
+      "catalog_enabled": true
+    },
+    "management.unified": {
+      "catalog_enabled": true
+    },
+    "service.meeting_topic_suggester": {
+      "catalog_enabled": true
+    },
+    "service.reference_webhook": {
+      "catalog_enabled": true
+    },
+    "service.task_dispatcher": {
+      "catalog_enabled": true
+    },
+    "text_processing.semantic_refiner": {
+      "catalog_enabled": true
+    },
+    "search.simple": {
+      "catalog_enabled": true
+    },
+    "search.semantic_smart": {
+      "catalog_enabled": true
+    },
+    "service.prompt_manager": {
+      "catalog_enabled": true
+    }
+  }
+}
+

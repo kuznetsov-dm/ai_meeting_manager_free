@@ -1,0 +1,27 @@
+{
+  "id": "service.prompt_manager",
+  "name": "Prompt Manager",
+  "product_name": "Prompt Manager",
+  "highlights": "Единое место для промптов, чтобы AI работал предсказуемо.",
+  "description": "Соберите библиотеку промптов и пресетов для разных сценариев встреч: коротко, подробно, только задачи. Это повышает качество и стабильность результатов AI и экономит время на повторяющихся правках.",
+  "ui_stage": "service",
+  "tags": ["Промпты", "Качество"],
+  "capabilities": { "prompt_manager": true },
+  "howto": [
+    "Откройте Settings и выберите Prompt Manager.",
+    "Создайте или выберите пресет под задачу (например: \"только задачи\", \"кратко\", \"подробно\").",
+    "Используйте выбранный пресет в AI Processing и запускайте встречу."
+  ],
+  "version": "0.1.0",
+  "api_version": "1",
+  "entrypoint": "plugins.service.prompt_manager.prompt_manager:Plugin",
+  "artifacts": [
+    "summary"
+  ],
+  "hooks": [],
+  "ui": {
+    "tabs": [],
+    "widgets": []
+  }
+}
+

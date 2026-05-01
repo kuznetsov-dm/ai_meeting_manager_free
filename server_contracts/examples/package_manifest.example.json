@@ -1,0 +1,23 @@
+{
+  "plugin_id": "service.partner_notes",
+  "version": "1.2.0",
+  "api_version": "1",
+  "entrypoint": "partner_notes:Plugin",
+  "publisher_id": "partner",
+  "package_checksum_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "signature": "base64-signature",
+  "signature_algorithm": "rsa-sha256",
+  "signing_key_id": "primary",
+  "files": [
+    {
+      "path": "plugin.json",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "size_bytes": 1421
+    },
+    {
+      "path": "partner_notes.py",
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "size_bytes": 8422
+    }
+  ]
+}

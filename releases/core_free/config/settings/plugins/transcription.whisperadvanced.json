@@ -1,0 +1,24 @@
+{
+  "allow_download": false,
+  "language_code": "",
+  "language_mode": "auto",
+  "model": "tiny",
+  "models": [
+    {
+      "availability_status": "ready",
+      "download_url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin",
+      "enabled": false,
+      "favorite": false,
+      "file": "ggml-tiny.bin",
+      "installed": true,
+      "model_id": "tiny",
+      "observed_success": false,
+      "product_name": "Whisper Tiny",
+      "source_url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "status": "installed"
+    }
+  ],
+  "models_dir": "models/whisper",
+  "vad_model": "models/whisper/ggml-silero-v6.2.0.bin",
+  "whisper_path": "bin/whisper_cpp/whisper-cli"
+}

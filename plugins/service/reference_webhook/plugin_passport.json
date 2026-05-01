@@ -1,0 +1,6 @@
+{
+  "provider": {
+    "name": "Webhook",
+    "description": "Generic HTTP webhook target."
+  }
+}

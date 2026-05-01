@@ -1,0 +1,50 @@
+{
+  "provider": {
+    "name": "DeepSeek",
+    "description": "Commercial LLM provider focused on quality and efficiency."
+  },
+  "models": [
+    {
+      "id": "deepseek-chat",
+      "name": "DeepSeek-V3 (Standard)",
+      "description": "Тип: Облачная LLM (General Purpose). Характеристики: контекстное окно 128k, огромная база знаний. Плюсы: идеально подходит для финальной суммаризации 2-часовых встреч, очень дешевые токены. Минусы: требует стабильного интернет-соединения, данные уходят на внешние сервера.",
+      "highlights": "Финальная суммаризация длинных встреч, лучшее соотношение цены и качества",
+      "context_window": 128000,
+      "size_hint": "Cloud API, 128k context",
+      "source_url": "https://api.deepseek.com"
+    },
+    {
+      "id": "deepseek-reasoner",
+      "name": "DeepSeek-R1 (Reasoning)",
+      "description": "Тип: Модель с рассуждением (Chain-of-Thought). Характеристики: перед ответом строит цепочку мыслей. Плюсы: лучше всех находит скрытые противоречия в технических и юридических обсуждениях. Минусы: отвечает медленнее стандартных моделей из-за этапа раздумий.",
+      "highlights": "Глубокая логика, сложные технические и юридические обсуждения",
+      "context_window": 128000,
+      "size_hint": "Cloud API, 128k context",
+      "source_url": "https://api.deepseek.com"
+    }
+  ],
+  "capabilities": {
+    "alias_code_policy": {
+      "provider_code": "ds",
+      "strip_model_tokens": ["deepseek"],
+      "model_codes": {
+        "deepseek-chat": "ch",
+        "deepseek-reasoner": "rs"
+      }
+    },
+    "health": {
+      "required_settings": [
+        {
+          "label": "API key",
+          "keys": ["api_key", "user_api_key", "paid_api_key", "user_key", "paid_key"]
+        }
+      ]
+    },
+    "models": {
+      "storage": "online",
+      "managed_actions": {
+        "list": "list_models"
+      }
+    }
+  }
+}

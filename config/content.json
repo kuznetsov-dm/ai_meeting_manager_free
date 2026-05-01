@@ -1,0 +1,250 @@
+﻿{
+    "labels":  {
+                   "edit_provider":  "EDIT",
+                   "default_model":  "Default",
+                   "auth_mode_user":  "User key",
+                   "auth_mode_free":  "Бесплатный (free_key)",
+                   "auth_mode_paid":  "Платный (paid_key)"
+               },
+    "prompts":  {
+                    "openrouter_system":  "Summarize the meeting transcript into concise bullet points.",
+                    "deepseek_system":  "Summarize the meeting transcript into concise bullet points.",
+                    "llama_system":  "Summarize the meeting transcript into concise bullet points."
+                },
+    "openrouter":  {
+                       "free_models":  [
+                                           {
+                                               "model_id":  "google/gemini-2.0-flash-exp:free",
+                                               "source_url":  "https://openrouter.ai/models/google/gemini-2.0-flash-exp:free",
+                                               "product_name":  "Gemini 2.0 Flash Exp1 (free)",
+                                               "context_window":  1050000,
+                                               "highlights":  "Long meetings",
+                                               "description":  "Handles multi-hour conference transcripts with stable quality."
+                                           },
+                                           {
+                                               "model_id":  "xiaomi/mimo-v2-flash:free",
+                                               "source_url":  "https://openrouter.ai/models/xiaomi/mimo-v2-flash:free",
+                                               "product_name":  "Xiaomi MiMo-V2-Flash (free)",
+                                               "context_window":  256000,
+                                               "highlights":  "Speed, structure",
+                                               "description":  "Best when you need action items fast and well-structured."
+                                           },
+                                           {
+                                               "model_id":  "meta-llama/llama-3.1-405b-instruct:free",
+                                               "source_url":  "https://openrouter.ai/models/meta-llama/llama-3.1-405b-instruct:free",
+                                               "product_name":  "Llama 3.1 405B (free)",
+                                               "context_window":  131000,
+                                               "highlights":  "Depth, reasoning",
+                                               "description":  "Captures subtle logic and nuanced discussion flow."
+                                           },
+                                           {
+                                               "model_id":  "deepseek/deepseek-r1t-chimera:free",
+                                               "source_url":  "https://openrouter.ai/models/deepseek/deepseek-r1t-chimera:free",
+                                               "product_name":  "DeepSeek R1T Chimera (free)",
+                                               "context_window":  164000,
+                                               "highlights":  "Technical extraction",
+                                               "description":  "Strong on technical and IT-heavy transcripts."
+                                           },
+                                           {
+                                               "model_id":  "google/gemma-3-27b-it:free",
+                                               "source_url":  "https://openrouter.ai/models/google/gemma-3-27b-it:free",
+                                               "product_name":  "Gemma 3 27B (free)",
+                                               "context_window":  131000,
+                                               "highlights":  "Multilingual accuracy",
+                                               "description":  "Reliable on mixed-language or rare-language transcripts."
+                                           },
+                                           {
+                                               "model_id":  "meta-llama/llama-3.3-70b-instruct:free",
+                                               "source_url":  "https://openrouter.ai/models/meta-llama/llama-3.3-70b-instruct:free",
+                                               "product_name":  "Llama 3.3 70B (free)",
+                                               "context_window":  131000,
+                                               "highlights":  "Stable standard",
+                                               "description":  "Balanced quality for everyday meeting summaries."
+                                           },
+                                           {
+                                               "model_id":  "z-ai/glm-4.5-air:free",
+                                               "source_url":  "https://openrouter.ai/models/z-ai/glm-4.5-air:free",
+                                               "product_name":  "GLM 4.5 Air (free)",
+                                               "context_window":  0,
+                                               "highlights":  "Fast summaries",
+                                               "description":  "Lightweight model for quick meeting summaries."
+                                           },
+                                           {
+                                               "model_id":  "deepseek/deepseek-r1-0528:free",
+                                               "source_url":  "https://openrouter.ai/models/deepseek/deepseek-r1-0528:free",
+                                               "product_name":  "DeepSeek R1 0528 (free)",
+                                               "context_window":  0,
+                                               "highlights":  "Reasoning",
+                                               "description":  "Improved reasoning for technical discussions."
+                                           },
+                                           {
+                                               "model_id":  "qwen/qwen-2.5-vl-7b-instruct:free",
+                                               "source_url":  "https://openrouter.ai/models/qwen/qwen-2.5-vl-7b-instruct:free",
+                                               "product_name":  "Qwen2.5 VL 7B Instruct (free)",
+                                               "context_window":  0,
+                                               "highlights":  "Multimodal",
+                                               "description":  "Vision-language capable; useful when notes include visuals."
+                                           },
+                                           {
+                                               "model_id":  "meta-llama/llama-3.2-3b-instruct:free",
+                                               "source_url":  "https://openrouter.ai/models/meta-llama/llama-3.2-3b-instruct:free",
+                                               "product_name":  "Llama 3.2 3B Instruct (free)",
+                                               "context_window":  0,
+                                               "highlights":  "Compact",
+                                               "description":  "Small model for quick summaries on limited hardware."
+                                           },
+                                           {
+                                               "model_id":  "qwen/qwen3-4b:free",
+                                               "source_url":  "https://openrouter.ai/models/qwen/qwen3-4b:free",
+                                               "product_name":  "Qwen3 4B (free)",
+                                               "context_window":  0,
+                                               "highlights":  "Balanced",
+                                               "description":  "Balanced quality and speed for everyday notes."
+                                           },
+                                           {
+                                               "model_id":  "google/gemma-3-4b-it:free",
+                                               "source_url":  "https://openrouter.ai/models/google/gemma-3-4b-it:free",
+                                               "product_name":  "Gemma 3 4B (free)",
+                                               "context_window":  0,
+                                               "highlights":  "Compact",
+                                               "description":  "Small Gemma variant for faster summaries."
+                                           },
+                                           {
+                                               "model_id":  "google/gemma-3n-e2b-it:free",
+                                               "source_url":  "https://openrouter.ai/models/google/gemma-3n-e2b-it:free",
+                                               "product_name":  "Gemma 3N E2B (free)",
+                                               "context_window":  0,
+                                               "highlights":  "Lightweight",
+                                               "description":  "Very small model for quick drafts."
+                                           }
+                                       ]
+                   },
+    "prompt_manager":  {
+                           "max_words":  600,
+                           "presets":  [
+                                           {
+                                               "id":  "essential",
+                                               "label":  "Essential (projects \u0026 tasks)",
+                                               "prompt":  "Summarize only the most important items: projects and tasks. Omit background and narrative unless required for clarity."
+                                           },
+                                           {
+                                               "id":  "standard",
+                                               "label":  "Standard (projects, tasks, outcomes)",
+                                               "prompt":  "Summarize projects and tasks, then provide the key outcomes as bullet points and a brief overall meeting summary."
+                                           },
+                                           {
+                                               "id":  "detailed",
+                                               "label":  "Detailed (projects, tasks, outcomes, flow)",
+                                               "prompt":  "Summarize projects and tasks, provide the key outcomes as bullet points and a brief overall meeting summary, and add a short discussion flow."
+                                           }
+                                       ]
+                       },
+    "deepseek":  {
+                     "models":  [
+                                    {
+                                        "model_id":  "deepseek-chat",
+                                        "source_url":  "https://api.deepseek.com",
+                                        "product_name":  "DeepSeek-V3 (Standard)",
+                                        "context_window":  128000,
+                                        "size_hint":  "Cloud API, 128k context",
+                                        "highlights":  "Р¤РёРЅР°Р»СЊРЅР°СЏ СЃСѓРјРјР°СЂРёР·Р°С†РёСЏ РґР»РёРЅРЅС‹С… РІСЃС‚СЂРµС‡, Р»СѓС‡С€РµРµ СЃРѕРѕС‚РЅРѕС€РµРЅРёРµ С†РµРЅС‹ Рё РєР°С‡РµСЃС‚РІР°",
+                                        "description":  "РўРёРї: РћР±Р»Р°С‡РЅР°СЏ LLM (General Purpose). РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё: РєРѕРЅС‚РµРєСЃС‚РЅРѕРµ РѕРєРЅРѕ 128k, РѕРіСЂРѕРјРЅР°СЏ Р±Р°Р·Р° Р·РЅР°РЅРёР№. РџР»СЋСЃС‹: РёРґРµР°Р»СЊРЅРѕ РїРѕРґС…РѕРґРёС‚ РґР»СЏ С„РёРЅР°Р»СЊРЅРѕР№ СЃСѓРјРјР°СЂРёР·Р°С†РёРё 2-С‡Р°СЃРѕРІС‹С… РІСЃС‚СЂРµС‡, РѕС‡РµРЅСЊ РґРµС€РµРІС‹Рµ С‚РѕРєРµРЅС‹. РњРёРЅСѓСЃС‹: С‚СЂРµР±СѓРµС‚ СЃС‚Р°Р±РёР»СЊРЅРѕРіРѕ РёРЅС‚РµСЂРЅРµС‚-СЃРѕРµРґРёРЅРµРЅРёСЏ, РґР°РЅРЅС‹Рµ СѓС…РѕРґСЏС‚ РЅР° РІРЅРµС€РЅРёРµ СЃРµСЂРІРµСЂР°."
+                                    },
+                                    {
+                                        "model_id":  "deepseek-reasoner",
+                                        "source_url":  "https://api.deepseek.com",
+                                        "product_name":  "DeepSeek-R1 (Reasoning)",
+                                        "context_window":  128000,
+                                        "size_hint":  "Cloud API, 128k context",
+                                        "highlights":  "Р“Р»СѓР±РѕРєР°СЏ Р»РѕРіРёРєР°, СЃР»РѕР¶РЅС‹Рµ С‚РµС…РЅРёС‡РµСЃРєРёРµ Рё СЋСЂРёРґРёС‡РµСЃРєРёРµ РѕР±СЃСѓР¶РґРµРЅРёСЏ",
+                                        "description":  "РўРёРї: РњРѕРґРµР»СЊ СЃ СЂР°СЃСЃСѓР¶РґРµРЅРёРµРј (Chain-of-Thought). РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё: РїРµСЂРµРґ РѕС‚РІРµС‚РѕРј СЃС‚СЂРѕРёС‚ С†РµРїРѕС‡РєСѓ РјС‹СЃР»РµР№. РџР»СЋСЃС‹: Р»СѓС‡С€Рµ РІСЃРµС… РЅР°С…РѕРґРёС‚ СЃРєСЂС‹С‚С‹Рµ РїСЂРѕС‚РёРІРѕСЂРµС‡РёСЏ РІ С‚РµС…РЅРёС‡РµСЃРєРёС… Рё СЋСЂРёРґРёС‡РµСЃРєРёС… РѕР±СЃСѓР¶РґРµРЅРёСЏС…. РњРёРЅСѓСЃС‹: РѕС‚РІРµС‡Р°РµС‚ РјРµРґР»РµРЅРЅРµРµ СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… РјРѕРґРµР»РµР№ РёР·-Р·Р° СЌС‚Р°РїР° СЂР°Р·РґСѓРјРёР№."
+                                    }
+                                ]
+                 },
+    "zai":  {
+                "models":  [
+                               {
+                                   "model_id":  "glm-4.5-flash",
+                                   "source_url":  "https://docs.z.ai/",
+                                   "product_name":  "Z.ai 4.5 Free",
+                                   "context_window":  128000,
+                                   "size_hint":  "Free API, 128k context",
+                                   "highlights":  "РЎС‚Р°Р±РёР»СЊРЅС‹Р№ СЂСѓСЃСЃРєРёР№ СЏР·С‹Рє, Р±РµСЃРїР»Р°С‚РЅС‹Р№ API РґР»СЏ СЂР°Р±РѕС‡РёС… summary",
+                                   "description":  "РўРёРї: Р‘Р°Р·РѕРІР°СЏ С„Р»Р°РіРјР°РЅСЃРєР°СЏ РјРѕРґРµР»СЊ (Р±РµСЃРїР»Р°С‚РЅС‹Р№ СѓСЂРѕРІРµРЅСЊ). РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё: РѕРєРЅРѕ РєРѕРЅС‚РµРєСЃС‚Р° 128k, РІС‹СЃРѕРєР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РіРµРЅРµСЂР°С†РёРё. РџР»СЋСЃС‹: РѕС‡РµРЅСЊ СЃС‚Р°Р±РёР»СЊРЅС‹Р№ СЂСѓСЃСЃРєРёР№ СЏР·С‹Рє, С…РѕСЂРѕС€Рѕ РїРѕРЅРёРјР°РµС‚ СЃС‚СЂСѓРєС‚СѓСЂСѓ РґРёР°Р»РѕРіР° Рё СЂРѕР»Рё СЃРїРёРєРµСЂРѕРІ. РњРёРЅСѓСЃС‹: РЅР° Р±РµСЃРїР»Р°С‚РЅРѕРј С‚Р°СЂРёС„Рµ РІРѕР·РјРѕР¶РЅС‹ Р»РёРјРёС‚С‹ РїРѕ Р·Р°РїСЂРѕСЃР°Рј РІ РјРёРЅСѓС‚Сѓ."
+                               },
+                               {
+                                   "model_id":  "glm-4.7-flash",
+                                   "source_url":  "https://docs.z.ai/",
+                                   "product_name":  "Z.ai 4.7 Free (Turbo/Preview)",
+                                   "context_window":  200000,
+                                   "size_hint":  "Free API, 200k+ context",
+                                   "highlights":  "РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РјРѕС‰РЅРѕСЃС‚СЊ РЅР° Р±РµСЃРїР»Р°С‚РЅРѕРј API, РѕС‡РµРЅСЊ РґР»РёРЅРЅС‹Рµ СЃС‚СЂР°С‚РµРіРёС‡РµСЃРєРёРµ СЃРµСЃСЃРёРё",
+                                   "description":  "РўРёРї: Р­РєСЃРїРµСЂРёРјРµРЅС‚Р°Р»СЊРЅР°СЏ СЃРІРµСЂС…РјРѕС‰РЅР°СЏ РјРѕРґРµР»СЊ. РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё: СЂР°СЃС€РёСЂРµРЅРЅРѕРµ РѕРєРЅРѕ РєРѕРЅС‚РµРєСЃС‚Р° 200k+ С‚РѕРєРµРЅРѕРІ. РџР»СЋСЃС‹: СЃР°РјР°СЏ СѓРјРЅР°СЏ РјРѕРґРµР»СЊ РІ Р±РµСЃРїР»Р°С‚РЅРѕРј СЃРµРіРјРµРЅС‚Рµ, РІС‹РґРµСЂР¶РёРІР°РµС‚ РѕС‡РµРЅСЊ РґР»РёРЅРЅС‹Рµ СЃС‚СЂР°С‚РµРіРёС‡РµСЃРєРёРµ СЃРµСЃСЃРёРё. РњРёРЅСѓСЃС‹: РІ С‡Р°СЃС‹ РїРёРє РІРѕР·РјРѕР¶РЅС‹ Р·Р°РґРµСЂР¶РєРё, РёРЅРѕРіРґР° С‚СЂРµР±СѓРµС‚ Р±РѕР»РµРµ С‚РѕС‡РЅРѕРіРѕ РїСЂРѕРјРїС‚РёРЅРіР°."
+                               }
+                           ]
+            },
+    "llama":  {
+                  "models":  [
+                                 {
+                                     "model_id":  "Qwen/Qwen3-1.7B-GGUF",
+                                     "source_url":  "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF",
+                                     "download_url":  "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q8_0.gguf",
+                                     "file":  "Qwen3-1.7B-Q8_0.gguf",
+                                     "product_name":  "Qwen3 1.7B (GGUF)",
+                                     "quant":  "Q8_0",
+                                     "size_hint":  "1.8 GB",
+                                     "notes":  "РџСЂРѕРјРµР¶СѓС‚РѕС‡РЅС‹Р№ РѕС„РёС†РёР°Р»СЊРЅС‹Р№ Qwen3 GGUF РјРµР¶РґСѓ 0.6B Рё 4B; РЅР° СЃС‚СЂР°РЅРёС†Рµ РµСЃС‚СЊ quickstart РґР»СЏ llama.cpp."
+                                 },
+                                 {
+                                     "model_id":  "Qwen/Qwen3-4B-GGUF",
+                                     "source_url":  "https://huggingface.co/Qwen/Qwen3-4B-GGUF",
+                                     "download_url":  "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf",
+                                     "file":  "Qwen3-4B-Q4_K_M.gguf",
+                                     "product_name":  "Qwen3 4B (GGUF)",
+                                     "quant":  "Q4_K_M",
+                                     "size_hint":  "2.6 GB",
+                                     "notes":  "РЎС‚Р°СЂС‹Р№ СЂР°Р±РѕС‡РёР№ baseline: Р»СѓС‡С€РёР№ Р±Р°Р»Р°РЅСЃ РєР°С‡РµСЃС‚РІР° Рё СЃРєРѕСЂРѕСЃС‚Рё РґР»СЏ Р»РѕРєР°Р»СЊРЅС‹С… summary"
+                                 },
+                                 {
+                                     "model_id":  "alpacapilot/Phi-4-mini-instruct-Q4_K_M-GGUF",
+                                     "source_url":  "https://huggingface.co/alpacapilot/Phi-4-mini-instruct-Q4_K_M-GGUF",
+                                     "download_url":  "https://huggingface.co/alpacapilot/Phi-4-mini-instruct-Q4_K_M-GGUF/resolve/main/phi-4-mini-instruct-q4_k_m.gguf",
+                                     "file":  "phi-4-mini-instruct-q4_k_m.gguf",
+                                     "product_name":  "Phi-4 Mini Instruct (GGUF)",
+                                     "quant":  "Q4_K_M",
+                                     "size_hint":  "1.6 GB",
+                                     "notes":  "РЎС‚Р°СЂР°СЏ СЂР°Р±РѕС‡Р°СЏ РєРѕРјРїР°РєС‚РЅР°СЏ РјРѕРґРµР»СЊ: С‚РѕС‡РЅР° РЅР° РґР°С‚Р°С…, РёРјРµРЅР°С… Рё С†РёС„СЂР°С…"
+                                 },
+                                 {
+                                     "model_id":  "AyyYOO/MiniCPM4-8B-Q4_K_M-GGUF",
+                                     "source_url":  "https://huggingface.co/AyyYOO/MiniCPM4-8B-Q4_K_M-GGUF",
+                                     "download_url":  "https://huggingface.co/AyyYOO/MiniCPM4-8B-Q4_K_M-GGUF/resolve/main/minicpm4-8b-q4_k_m.gguf",
+                                     "file":  "minicpm4-8b-q4_k_m.gguf",
+                                     "product_name":  "MiniCPM4 8B (GGUF)",
+                                     "quant":  "Q4_K_M",
+                                     "size_hint":  "5.0 GB",
+                                     "notes":  "РќРѕРІР°СЏ РјРѕРґРµР»СЊ РєРѕРЅС†Р° 2025 РіРѕРґР° РґР»СЏ Р±РѕР»РµРµ СЃРёР»СЊРЅС‹С… long-context summary"
+                                 },
+                                 {
+                                     "model_id":  "arcee-ai/Virtuoso-Small-GGUF",
+                                     "source_url":  "https://huggingface.co/arcee-ai/Virtuoso-Small-GGUF",
+                                     "download_url":  "https://huggingface.co/arcee-ai/Virtuoso-Small-GGUF/resolve/main/Virtuoso-Small-Q4_K_M.gguf",
+                                     "file":  "Virtuoso-Small-Q4_K_M.gguf",
+                                     "product_name":  "Virtuoso Small (GGUF)",
+                                     "quant":  "Q4_K_M",
+                                     "size_hint":  "2.4 GB",
+                                     "notes":  "РЎРІРµР¶Р°СЏ РјРѕРґРµР»СЊ РЅР°С‡Р°Р»Р° 2026 РіРѕРґР° СЃ С…РѕСЂРѕС€РёРј instruction-following"
+                                 },
+                                 {
+                                     "model_id":  "Guilherme34/01-v2-Q4_K_M-GGUF",
+                                     "source_url":  "https://huggingface.co/Guilherme34/01-v2-Q4_K_M-GGUF",
+                                     "download_url":  "https://huggingface.co/Guilherme34/01-v2-Q4_K_M-GGUF/resolve/main/01-v2-Q4_K_M.gguf",
+                                     "file":  "01-v2-Q4_K_M.gguf",
+                                     "product_name":  "01-v2 (GGUF)",
+                                     "quant":  "Q4_K_M",
+                                     "size_hint":  "4.8 GB",
+                                     "notes":  "РћС‡РµРЅСЊ СЃРІРµР¶Р°СЏ reasoning-РјРѕРґРµР»СЊ РЅР°С‡Р°Р»Р° 2026 РіРѕРґР°"
+                                 }
+                             ]
+              }
+}

@@ -1,0 +1,94 @@
+ [build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-meetingnotes"
+version = "0.1.0"
+description = "AI Meeting Manager: pipeline-first meeting processing app with plugin architecture and lineage-based versioning."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "AI Meeting Manager Contributors" }
+]
+keywords = ["meetings", "transcription", "pipeline", "plugins", "llm", "search"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows",
+]
+
+dependencies = [
+  # Keep core lightweight. Add heavy deps via plugins where possible.
+  "pydantic>=2.8",
+  "typing-extensions>=4.10",
+  "python-dotenv>=1.0.1",
+  "PySide6>=6.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.6.5",
+]
+
+# Optional: provider/stage extras. Most plugins rely on external binaries or HTTP APIs.
+llm = [
+  # "openai>=1.0"
+]
+transcription = [
+  # "whispercpp-python>=0.0.1"
+]
+index = [
+  # "sqlite-utils>=3.37"
+]
+management = []
+service = []
+
+[project.scripts]
+# CLI entrypoint placeholder (create src/aimn/cli.py later)
+aimn = "aimn.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["aimn*"]
+
+[tool.setuptools.package-data]
+"aimn" = ["py.typed"]
+"aimn.plugins" = ["*.pyi"]
+"aimn.ui.assets" = ["*.png"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["src/aimn/_legacy_quarantine"]
+
+[tool.ruff.lint]
+select = [
+  "E", "F", "W",   # pycodestyle/pyflakes warnings & errors
+  "I",             # import sorting
+  "UP",            # pyupgrade
+  "B",             # bugbear
+]
+ignore = [
+  "E501",          # allow long lines in docs/strings when needed
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["aimn"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["src/aimn/_legacy_quarantine"]
+cache_dir = "logs/pytest/.pytest_cache"
+

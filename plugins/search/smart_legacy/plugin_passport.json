@@ -1,0 +1,6 @@
+{
+  "provider": {
+    "name": "Hybrid Search",
+    "description": "Combines lexical and semantic signals for higher-quality results."
+  }
+}

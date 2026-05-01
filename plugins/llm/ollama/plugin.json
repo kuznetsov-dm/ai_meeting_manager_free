@@ -1,0 +1,29 @@
+{
+  "id": "llm.ollama",
+  "name": "Ollama LLM Integration",
+  "product_name": "Ollama LLM",
+  "highlights": "Локальные summary без облака: приватность и контроль на вашем компьютере.",
+  "description": "Локальная генерация summary через Ollama. AI-магия без утечки данных: удобно для чувствительных встреч и офлайн-сценариев. Управление сервером и моделями делается в Settings.",
+  "ui_stage": "llm_processing",
+  "tags": ["AI", "Локально"],
+  "howto": [
+    "Откройте Settings > AI Processing.",
+    "Выберите Ollama и модель.",
+    "Запустите встречу, чтобы получить Summary."
+  ],
+  "version": "1.0.0",
+  "api_version": "1",
+  "entrypoint": "plugins.llm.ollama.ollama:Plugin",
+  "hooks": [
+    {
+      "name": "derive.after_postprocess",
+      "mode": "optional",
+      "priority": 100
+    }
+  ],
+  "artifacts": ["summary"],
+  "ui_schema": {
+    "settings": []
+  }
+}
+

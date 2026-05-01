@@ -1,0 +1,26 @@
+{
+  "id": "search.smart",
+  "name": "Smart Search (Answer w/ Sources)",
+  "product_name": "Smart Search",
+  "highlights": "Задайте вопрос и получите ответ с контекстом из ваших встреч.",
+  "description": "Умный поиск по встречам: лучшее ранжирование и (при наличии эмбеддингов) более точное понимание смысла. Немного AI-магии для навигации по архиву: вы спрашиваете как человек, а получаете релевантные фрагменты и удобный путь к источнику.",
+  "ui_stage": "service",
+  "tags": ["Поиск", "AI"],
+  "capabilities": { "global_search": { "mode": "smart" } },
+  "howto": [
+    "Откройте Meetings.",
+    "Переключите поиск в Smart режим (если доступно).",
+    "Задайте вопрос и откройте источники в результатах."
+  ],
+  "version": "0.1.0",
+  "api_version": "1",
+  "ui_hidden": true,
+  "entrypoint": "plugins.search.smart_legacy.smart_legacy:Plugin",
+  "hooks": [],
+  "artifacts": [],
+  "ui": {
+    "tabs": [],
+    "widgets": []
+  }
+}
+

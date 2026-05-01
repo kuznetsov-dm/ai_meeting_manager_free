@@ -1,0 +1,29 @@
+{
+  "id": "service.management_index",
+  "name": "Management Index",
+  "product_name": "Management Index",
+  "highlights": "Создает машинно-читаемый индекс по встрече для автоматизаций и интеграций.",
+  "description": "Формирует компактный JSON index по задачам/проектам/повестке, чтобы сервисы могли потреблять результат без парсинга текста. Это “инженерная магия”: превращаем итоги встречи в данные, пригодные для автоматизации.",
+  "ui_stage": "service",
+  "tags": ["Индекс", "Автоматизация"],
+  "howto": [
+    "Включите плагин.",
+    "Запустите встречу с включенными Management-плагинами.",
+    "Используйте index артефакт в сервисах/интеграциях."
+  ],
+  "icon_key": "service",
+  "version": "0.1.0",
+  "api_version": "1",
+  "entrypoint": "plugins.service.management_index.management_index:Plugin",
+  "hooks": [
+    {
+      "name": "derive.after_summary",
+      "mode": "optional",
+      "priority": 100
+    }
+  ],
+  "artifacts": [
+    "index"
+  ]
+}
+

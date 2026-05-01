@@ -1,0 +1,57 @@
+{
+  "pipeline": {
+    "disabled_stages": [
+      "management",
+      "service"
+    ],
+    "optional_stage_retries": 1,
+    "preset": "default"
+  },
+  "stages": {
+    "media_convert": {
+      "params": {
+        "channels": "1",
+        "normalize": false,
+        "sample_rate_hz": "48000"
+      }
+    },
+    "transcription": {
+      "plugin_id": "transcription.whisperadvanced",
+      "params": {
+        "model": "tiny",
+        "language_mode": "auto",
+        "language_code": "",
+        "allow_download": false
+      }
+    },
+    "text_processing": {
+      "plugin_id": "text_processing.minutes_heuristic_v2",
+      "params": {
+        "cascade": "balanced",
+        "summary_mode": "hybrid",
+        "actions_mode": "hybrid",
+        "allow_download": false
+      }
+    },
+    "llm_processing": {
+      "plugin_id": "llm.llama_cli",
+      "params": {
+        "binary_path": "bin/llama/llama-cli",
+        "model_path": "",
+        "model_id": "",
+        "model_quant": "Q4_K_M",
+        "allow_download": true,
+        "cache_dir": "models/llama",
+        "prompt_profile": "essential",
+        "prompt_custom": "",
+        "prompt_language": "",
+        "prompt_max_words": 600,
+        "max_tokens": 900,
+        "temperature": 0.2,
+        "ctx_size": 4096,
+        "gpu_layers": -1,
+        "extra_args": ""
+      }
+    }
+  }
+}

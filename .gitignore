@@ -1,0 +1,27 @@
+# Local binaries (compiled llama.cpp, etc.)
+bin/
+
+# Local AI models (downloaded GGUF, etc.)
+models/
+
+# Secrets and sensitive configuration
+.env
+.env.local
+.envgit
+*.pem
+*.key
+secrets.toml
+secrets.txt
+config/secrets.toml
+config/openrouter_free_key.txt
+
+# Runtime settings (auto-generated, host-specific)
+config/settings/
+
+# Output directory — only track meeting.json files
+output/*
+!output/*__MEETING.json
+
+# Logs — track them (override root .gitignore)
+!logs/
+!*.log

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "active_profile": "standard",
+  "custom_prompt_default": "Focus on key decisions, owners, dates, and next steps.",
+  "profiles": [
+    {
+      "id": "brief",
+      "label": "Brief",
+      "prompt": "Create a concise summary focused on decisions, owners, and deadlines. Keep it practical and short."
+    },
+    {
+      "id": "standard",
+      "label": "Standard",
+      "prompt": "Create a balanced meeting summary covering decisions, tasks with owners and dates, project references, and key outcomes."
+    },
+    {
+      "id": "detailed",
+      "label": "Detailed",
+      "prompt": "Create a detailed meeting summary including decisions, action items, dependencies, risks, outcomes, and a short chronological flow."
+    },
+    {
+      "id": "transcript_edit",
+      "label": "Transcript Edit",
+      "prompt": "Edit the transcript text: fix punctuation and speaker formatting, split into semantic blocks, preserve meaning and facts, do not summarize."
+    }
+  ],
+  "sections": {
+    "service_start": "SYSTEM INSTRUCTIONS (strict):\n{language_instruction}\nMaximum length: {max_words} words.\nReturn ONLY final markdown output. No chain-of-thought, drafts, meta commentary, or <think> tags.",
+    "request_wrapper": "REQUEST BODY:\n{request_body}",
+    "context": "CONTEXT RULES:\nUse approved context/entities if provided.\nDo not invent missing facts; when details are missing, write \"Not specified\".\nPreserve names and quoted fragments in their original script; do not transliterate or anglicize them.",
+    "service_final": "OUTPUT STRUCTURE (all sections required):\n### Meeting topic\n### Tasks, assignments, activities (with dates if available)\n### Project names\n### Key decisions / outcomes\n### Brief meeting summary\n### Short discussion flow",
+    "input_wrapper": "DYNAMIC INPUT:\n[CONTEXT]\n{context_block}\n\n[TRANSCRIPT]\n{transcript}"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "subject_id": "user_123",
+  "edition": "platform_pro",
+  "issued_at": "2026-03-13T10:05:00Z",
+  "platform_edition": {
+    "enabled": true,
+    "status": "active",
+    "expires_at": null
+  },
+  "plugins": {
+    "service.partner_notes": {
+      "status": "active",
+      "expires_at": null,
+      "grace_until": null,
+      "billing_product_id": "partner-notes-pro"
+    },
+    "service.reference_webhook": {
+      "status": "grace",
+      "expires_at": "2026-04-01T00:00:00Z",
+      "grace_until": "2026-04-15T00:00:00Z",
+      "billing_product_id": "reference-webhook-pro"
+    }
+  },
+  "_meta": {
+    "publisher_id": "apogee",
+    "signature_algorithm": "rsa-sha256",
+    "signing_key_id": "primary",
+    "signature": "base64-signature"
+  }
+}

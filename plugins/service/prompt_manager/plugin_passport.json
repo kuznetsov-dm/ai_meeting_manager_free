@@ -1,0 +1,6 @@
+{
+  "provider": {
+    "name": "Prompt Manager",
+    "description": "Centralized prompt control for LLM workflows."
+  }
+}

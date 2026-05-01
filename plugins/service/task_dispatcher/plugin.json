@@ -1,0 +1,34 @@
+{
+  "id": "service.task_dispatcher",
+  "name": "Global Meeting Exporter",
+  "product_name": "AI Meeting Bridge",
+  "highlights": "Экспорт задач встречи в Todoist и Trello.",
+  "description": "Плагин позволяет синхронизировать задачи встречи во внешних системах Todoist и Trello.",
+  "ui_stage": "management",
+  "tags": ["Tasks", "Integration", "Productivity"],
+  "version": "1.0.0",
+  "ui_hidden": true,
+  "api_version": "1",
+  "entrypoint": "plugins.service.task_dispatcher.task_dispatcher:Plugin",
+  "dependencies": [],
+  "hooks": [
+    { "name": "derive.after_summary", "mode": "optional", "priority": 100 }
+  ],
+  "artifacts": [],
+  "ui_schema": {
+    "settings": [
+      {
+        "key": "target_service",
+        "label": "Target Service",
+        "value": "todoist",
+        "options": [
+          { "label": "Todoist", "value": "todoist" },
+          { "label": "Trello", "value": "trello" }
+        ]
+      },
+      { "key": "todoist_token", "label": "Todoist API Token", "value": "", "advanced": true },
+      { "key": "trello_token", "label": "Trello API Token", "value": "", "advanced": true }
+    ]
+  }
+}
+

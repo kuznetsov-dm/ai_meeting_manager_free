@@ -1,0 +1,9 @@
+{
+  "edition": "platform_pro_dev",
+  "platform_edition": {
+    "enabled": true,
+    "status": "active",
+    "mode": "developer"
+  },
+  "plugins": {}
+}

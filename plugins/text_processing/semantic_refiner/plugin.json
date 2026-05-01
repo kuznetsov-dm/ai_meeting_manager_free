@@ -1,0 +1,27 @@
+{
+  "id": "text_processing.semantic_refiner",
+  "name": "Semantic Refiner",
+  "product_name": "Semantic Refiner",
+  "highlights": "Очистка транскрипции, смысловые блоки и ключевые слова без внешних сервисов.",
+  "description": "Плагин выполняет интеллектуальную чистку текста, разбивает его на логические блоки и извлекает наиболее значимые ключевые слова (сущности и термины).",
+  "ui_stage": "llm_processing",
+  "capabilities": {
+    "ui": {
+      "text_processing": {
+        "group": "essentials"
+      }
+    }
+  },
+  "tags": ["Cleaning", "NLP", "Keywords"],
+  "version": "1.0.0",
+  "api_version": "1",
+  "entrypoint": "plugins.text_processing.semantic_refiner.semantic_refiner:Plugin",
+  "hooks": [
+    { "name": "postprocess.after_transcribe", "mode": "optional", "priority": 50 }
+  ],
+  "artifacts": ["edited", "semantic_blocks", "important_keywords"],
+  "ui_schema": {
+    "settings": []
+  }
+}
+

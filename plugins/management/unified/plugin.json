@@ -1,0 +1,27 @@
+{
+  "id": "management.unified",
+  "name": "Unified Management",
+  "product_name": "Management Suggestions",
+  "highlights": "Извлекает предложения по задачам, проектам и повесткам без автосоздания мусора.",
+  "description": "Создаёт suggestions для вкладки Management вместо прямого автосоздания задач, проектов и повесток. Пользователь сам подтверждает, что превращать в реальные сущности.",
+  "ui_stage": "management",
+  "tags": ["Менеджмент", "Suggestions", "Tasks", "Projects", "Agendas"],
+  "howto": [
+    "Запустите AI Processing, чтобы получить Summary.",
+    "Включите Unified Management.",
+    "Проверьте suggestions во вкладке Management и подтвердите нужные сущности."
+  ],
+  "version": "1.0.0",
+  "api_version": "1",
+  "entrypoint": "plugins.management.unified.unified:Plugin",
+  "hooks": [
+    {
+      "name": "derive.after_summary",
+      "mode": "optional",
+      "priority": 100
+    }
+  ],
+  "artifacts": [
+    "management_suggestions"
+  ]
+}

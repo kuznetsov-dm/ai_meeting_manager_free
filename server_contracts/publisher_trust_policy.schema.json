@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://apogee.ai/aimn/server_contracts/publisher_trust_policy.schema.json",
+  "title": "AIMN Publisher Trust Policy",
+  "type": "object",
+  "required": ["publishers"],
+  "properties": {
+    "allow_untrusted_local_install": {
+      "type": "boolean"
+    },
+    "trusted_plugin_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"
+      }
+    },
+    "publishers": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_\\-]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["trust_level"],
+        "properties": {
+          "display_name": {
+            "type": "string"
+          },
+          "trust_level": {
+            "type": "string",
+            "enum": ["first_party", "trusted_third_party", "untrusted_local"]
+          },
+          "require_checksum": {
+            "type": "boolean"
+          },
+          "require_signature": {
+            "type": "boolean"
+          },
+          "signature_keys": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["key_id", "algorithm", "public_exponent", "modulus_hex"],
+              "properties": {
+                "key_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "algorithm": {
+                  "type": "string",
+                  "enum": ["rsa-sha256"]
+                },
+                "public_exponent": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "modulus_hex": {
+                  "type": "string",
+                  "pattern": "^[a-fA-F0-9]+$"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

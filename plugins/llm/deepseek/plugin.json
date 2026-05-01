@@ -1,0 +1,41 @@
+{
+  "id": "llm.deepseek",
+  "name": "DeepSeek",
+  "product_name": "DeepSeek LLM",
+  "highlights": "DeepSeek-V3 для дешевой финальной суммаризации, DeepSeek-R1 для сложной логики и поиска противоречий.",
+  "description": "Интеграция с DeepSeek для облачной суммаризации встреч. Встроены две рекомендованные модели: DeepSeek-V3 (Standard) для длинных повседневных встреч и DeepSeek-R1 (Reasoning) для технических, юридических и аналитических обсуждений.",
+  "ui_stage": "llm_processing",
+  "tags": ["AI", "Облако"],
+  "howto": [
+    "Откройте Settings > AI Processing.",
+    "Выберите DeepSeek и модель.",
+    "Запустите встречу, чтобы получить Summary."
+  ],
+  "version": "0.1.0",
+  "api_version": "1",
+  "entrypoint": "plugins.llm.deepseek.deepseek:Plugin",
+  "hooks": [
+    {
+      "name": "derive.after_postprocess",
+      "mode": "optional",
+      "priority": 100
+    }
+  ],
+  "ui_schema": {
+    "settings": [
+      {
+        "key": "api_key",
+        "label": "API Key",
+        "value": ""
+      }
+    ]
+  },
+  "artifacts": [
+    "summary"
+  ],
+  "ui": {
+    "tabs": [],
+    "widgets": []
+  }
+}
+

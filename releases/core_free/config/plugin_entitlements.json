@@ -1,0 +1,9 @@
+{
+  "edition": "core_free",
+  "platform_edition": {
+    "enabled": false,
+    "status": "inactive",
+    "mode": "free"
+  },
+  "plugins": {}
+}

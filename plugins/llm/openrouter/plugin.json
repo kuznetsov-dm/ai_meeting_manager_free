@@ -1,0 +1,41 @@
+{
+  "id": "llm.openrouter",
+  "name": "OpenRouter",
+  "product_name": "OpenRouter LLM Gateway",
+  "highlights": "Одна интеграция, десятки моделей: выбирайте скорость, качество или стоимость.",
+  "description": "Подключение к OpenRouter для генерации summary и структурирования итогов встречи. Это тот случай, когда AI-магия становится практикой: вы быстро подбираете подходящую модель под конкретный тип встречи и получаете предсказуемый результат.",
+  "ui_stage": "llm_processing",
+  "tags": ["AI", "Облако"],
+  "howto": [
+    "Откройте Settings > AI Processing.",
+    "Выберите OpenRouter и модель.",
+    "Запустите встречу, чтобы получить Summary."
+  ],
+  "version": "0.1.0",
+  "api_version": "1",
+  "entrypoint": "plugins.llm.openrouter.openrouter:Plugin",
+  "hooks": [
+    {
+      "name": "derive.after_postprocess",
+      "mode": "optional",
+      "priority": 100
+    }
+  ],
+  "ui_schema": {
+    "settings": [
+      {
+        "key": "api_key",
+        "label": "API Key",
+        "value": ""
+      }
+    ]
+  },
+  "artifacts": [
+    "summary"
+  ],
+  "ui": {
+    "tabs": [],
+    "widgets": []
+  }
+}
+

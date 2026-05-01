@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://apogee.ai/aimn/server_contracts/entitlements.schema.json",
+  "title": "AIMN Signed Entitlement Snapshot",
+  "type": "object",
+  "required": ["platform_edition"],
+  "properties": {
+    "subject_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "edition": {
+      "type": "string"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "platform_edition": {
+      "type": "object",
+      "required": ["enabled", "status"],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "inactive", "grace", "revoked", "expired"]
+        },
+        "expires_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": true
+    },
+    "plugins": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive", "grace", "expired", "revoked"]
+          },
+          "expires_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "grace_until": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "billing_product_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "_meta": {
+      "type": "object",
+      "required": ["publisher_id", "signature_algorithm", "signature"],
+      "properties": {
+        "publisher_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_\\-]*$"
+        },
+        "signature_algorithm": {
+          "type": "string",
+          "enum": ["rsa-sha256"]
+        },
+        "signing_key_id": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

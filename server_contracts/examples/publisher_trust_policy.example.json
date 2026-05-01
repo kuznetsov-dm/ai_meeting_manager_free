@@ -1,0 +1,42 @@
+{
+  "allow_untrusted_local_install": false,
+  "trusted_plugin_ids": [
+    "service.management_index"
+  ],
+  "publishers": {
+    "apogee": {
+      "display_name": "Apogee",
+      "trust_level": "first_party",
+      "require_checksum": true,
+      "require_signature": true,
+      "signature_keys": [
+        {
+          "key_id": "primary",
+          "algorithm": "rsa-sha256",
+          "public_exponent": "65537",
+          "modulus_hex": "A1B2C3"
+        },
+        {
+          "key_id": "rotated_2026",
+          "algorithm": "rsa-sha256",
+          "public_exponent": "65537",
+          "modulus_hex": "D4E5F6"
+        }
+      ]
+    },
+    "partner": {
+      "display_name": "Partner Inc",
+      "trust_level": "trusted_third_party",
+      "require_checksum": true,
+      "require_signature": true,
+      "signature_keys": [
+        {
+          "key_id": "primary",
+          "algorithm": "rsa-sha256",
+          "public_exponent": "65537",
+          "modulus_hex": "ABCDEF"
+        }
+      ]
+    }
+  }
+}

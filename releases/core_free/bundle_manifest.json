@@ -1,0 +1,92 @@
+{
+  "managed_roots": [
+    "src",
+    "plugins",
+    "bin",
+    "models",
+    "config",
+    "releases",
+    "LICENSE",
+    "run_ui.py"
+  ],
+  "copy_directories": [
+    "src",
+    "releases/core_free/config"
+  ],
+  "copy_files": [
+    "LICENSE",
+    "config/content.json",
+    "config/installed_plugins.json",
+    "config/secrets.template.toml",
+    "config/prompts/meeting_summary_prompt.json",
+    "releases/core_free/manifest.json",
+    "releases/core_free/FIRST_RUN.md",
+    "releases/core_free/Launch-Core-Free.ps1",
+    "releases/core_free/Launch-Core-Free.cmd",
+    "releases/core_free/run_ui.py",
+    "plugins/__init__.py",
+    "plugins/transcription/__init__.py",
+    "plugins/transcription/whisper_advanced/whisper_basic.py",
+    "plugins/transcription/whisper_advanced/whisper_advanced.py",
+    "plugins/transcription/whisper_advanced/plugin.json",
+    "plugins/transcription/whisper_advanced/plugin_passport.json",
+    "plugins/llm/__init__.py",
+    "plugins/llm/llama_cli/llama_cli.py",
+    "plugins/llm/llama_cli/plugin.json",
+    "plugins/llm/llama_cli/plugin_passport.json",
+    "plugins/text_processing/__init__.py",
+    "plugins/text_processing/utils.py",
+    "plugins/text_processing/minutes_heuristic_v2/minutes_heuristic_v2.py",
+    "plugins/text_processing/minutes_heuristic_v2/plugin.json",
+    "plugins/text_processing/semantic_refiner/plugin.json",
+    "plugins/text_processing/semantic_refiner/semantic_refiner.py",
+    "bin/ffmpeg/ffmpeg.exe",
+    "bin/llama/ggml-base.dll",
+    "bin/llama/ggml-cpu-alderlake.dll",
+    "bin/llama/ggml-cpu-haswell.dll",
+    "bin/llama/ggml-cpu-icelake.dll",
+    "bin/llama/ggml-cpu-sandybridge.dll",
+    "bin/llama/ggml-cpu-skylakex.dll",
+    "bin/llama/ggml-cpu-sse42.dll",
+    "bin/llama/ggml-cpu-x64.dll",
+    "bin/llama/ggml-vulkan.dll",
+    "bin/llama/ggml.dll",
+    "bin/llama/llama-cli.exe",
+    "bin/llama/llama.dll",
+    "bin/llama/mtmd.dll",
+    "bin/whisper_cpp/ggml-base.dll",
+    "bin/whisper_cpp/ggml-cpu.dll",
+    "bin/whisper_cpp/ggml-vulkan.dll",
+    "bin/whisper_cpp/ggml.dll",
+    "bin/whisper_cpp/mtmd.dll",
+    "bin/whisper_cpp/whisper-cli.exe",
+    "bin/whisper_cpp/whisper.dll",
+    "models/whisper/ggml-silero-v6.2.0.bin",
+    "models/whisper/ggml-tiny.bin"
+  ],
+  "empty_directories": [
+    "config/plugins_installed",
+    "models/llama",
+    "models/whisper"
+  ],
+  "expected_plugin_ids": [
+    "transcription.whisperadvanced",
+    "llm.llama_cli",
+    "text_processing.minutes_heuristic_v2",
+    "text_processing.semantic_refiner"
+  ],
+  "forbidden_local_config_paths": [
+    "config/plugin_distribution.json",
+    "config/plugin_entitlements.json",
+    "config/plugins.toml",
+    "config/settings/pipeline/active.json",
+    "config/settings/pipeline/default.json"
+  ],
+  "forbidden_globs": [
+    "models/llama/*.gguf",
+    "models/whisper/ggml-base.bin",
+    "models/whisper/ggml-small.bin",
+    "models/whisper/ggml-medium.bin",
+    "models/whisper/ggml-large.bin"
+  ]
+}
