@@ -24,6 +24,20 @@ Key implications:
 - `*_MEETING.json` remains the canonical meeting passport.
 - Stages are fixed, plugin implementations are replaceable.
 
+## How to Download
+
+If you want to run the application as an end user, do **not** use GitHub's `Code -> Download ZIP` source archive.
+That archive contains source code only and does not include the bundled runtime files required for the desktop build.
+
+Use the packaged file from the [Releases](https://github.com/kuznetsov-dm/ai_meeting_manager_free/releases) page instead.
+The Windows release bundle includes:
+- `AI Meeting Manager Free.exe`
+- bundled `ffmpeg`
+- bundled `whisper.cpp` binaries and DLLs
+- bundled `llama.cpp` binaries and DLLs
+- bundled `Whisper Tiny` model for quick startup
+
+If you only want to browse or modify the code, the repository source is the right download.
 ## Free Build
 
 This repository includes the `core_free` release profile used for the free distributable build.
@@ -43,3 +57,4 @@ This is a practical fit for a public free edition with separately licensed paid 
 
 The source code license does not grant rights to the project name, product branding, or logos.
 See [TRADEMARKS.md](TRADEMARKS.md).
+
