@@ -45,6 +45,10 @@ class ReleaseProfile:
         values = [str(item or "").strip() for item in items if str(item or "").strip()]
         return tuple(values)
 
+    def first_run_wizard(self) -> dict[str, Any]:
+        payload = self.payload.get("first_run_wizard")
+        return dict(payload) if isinstance(payload, dict) else {}
+
 
 def active_release_profile(app_root: Path | None = None) -> ReleaseProfile:
     raw = os.environ.get("AIMN_RELEASE_PROFILE", "").strip()

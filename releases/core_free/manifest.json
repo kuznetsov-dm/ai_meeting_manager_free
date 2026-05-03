@@ -27,5 +27,156 @@
     "show_plugin_marketplace": false,
     "allow_plugin_package_install": false,
     "show_management_tab": false
+  },
+  "first_run_wizard": {
+    "version": 1,
+    "title": "Portable setup",
+    "intro": "This wizard prepares the portable release for first use. You can keep bundled Whisper Tiny for immediate transcription, preload stronger local models, and configure the app before the first real meeting.",
+    "startup_warning": "The first launch can be slower than normal. If you choose extra models below, wait for downloads to finish before you judge speed or reliability.",
+    "transcription_language_note": "AUTO usually works well. For predictable audio language you can set it explicitly. Two-pass decoding is slower, but can help on noisy or difficult recordings.",
+    "preferences": {
+      "locale_options": [
+        { "id": "en", "label": "English" },
+        { "id": "ru", "label": "Russian" }
+      ],
+      "theme_options": [
+        { "id": "light", "label": "Light" },
+        { "id": "dark", "label": "Dark" },
+        { "id": "light_mono", "label": "Light Mono" },
+        { "id": "dark_mono", "label": "Dark Mono" }
+      ],
+      "transcription_language_options": [
+        {
+          "id": "auto",
+          "label": "AUTO",
+          "params": { "language_mode": "auto", "language_code": "" }
+        },
+        {
+          "id": "ru",
+          "label": "Russian",
+          "params": { "language_mode": "manual", "language_code": "ru" }
+        },
+        {
+          "id": "en",
+          "label": "English",
+          "params": { "language_mode": "manual", "language_code": "en" }
+        }
+      ]
+    },
+    "downloads": {
+      "whisper": {
+        "title": "Whisper setup",
+        "description": "You already received bundled Whisper Tiny for instant startup. Keep it for smoke tests, or start downloading a stronger model now and let it finish in the background.",
+        "bundled_note": "Bundled Whisper Tiny is already included in this release.",
+        "options": [
+          {
+            "id": "tiny",
+            "label": "Keep Whisper Tiny",
+            "description": "Fastest startup and lowest disk usage. Best for immediate smoke tests and quick drafts.",
+            "mode": "keep_bundled",
+            "default": true
+          },
+          {
+            "id": "small-q8_0",
+            "model_id": "small-q8_0",
+            "label": "Download Whisper Small Q8_0",
+            "description": "Balanced choice for most users. Better accuracy without the size of Medium or Large.",
+            "size_hint": "About 252 MB"
+          },
+          {
+            "id": "medium-q8_0",
+            "model_id": "medium-q8_0",
+            "label": "Download Whisper Medium Q8_0",
+            "description": "Higher quality for important meetings. Slower and heavier than Small.",
+            "size_hint": "About 785 MB"
+          }
+        ]
+      },
+      "semantic": {
+        "title": "Semantic preload",
+        "description": "Semantic cleanup and better structure can work without preload, but the first semantic run is much smoother if the embeddings model is downloaded now.",
+        "options": [
+          {
+            "id": "skip",
+            "label": "Skip for now",
+            "description": "Keep semantic processing in fallback mode. The app still works, but the first semantic run may be less accurate until you preload later.",
+            "mode": "skip",
+            "default": true
+          },
+          {
+            "id": "intfloat/multilingual-e5-small",
+            "model_id": "intfloat/multilingual-e5-small",
+            "label": "Preload E5 Small",
+            "description": "Recommended starter semantic model. Faster and lighter.",
+            "size_hint": "Smaller download"
+          },
+          {
+            "id": "intfloat/multilingual-e5-base",
+            "model_id": "intfloat/multilingual-e5-base",
+            "label": "Preload E5 Base",
+            "description": "Better semantic quality, but larger and slower to load.",
+            "size_hint": "Larger download"
+          }
+        ]
+      },
+      "summary": {
+        "title": "Summary model preload",
+        "description": "Summary generation is optional until you download a local GGUF model. Start the download now so the first real summary does not look frozen later.",
+        "options": [
+          {
+            "id": "skip",
+            "label": "Skip for now",
+            "description": "You can still use transcription and semantic cleanup. Summary stays unavailable until you add a GGUF model later.",
+            "mode": "skip",
+            "default": true
+          },
+          {
+            "id": "unsloth/Qwen3-0.6B-GGUF",
+            "model_id": "unsloth/Qwen3-0.6B-GGUF",
+            "quant": "Q4_K_M",
+            "file": "Qwen3-0.6B-Q4_K_M.gguf",
+            "download_url": "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf",
+            "label": "Preload Qwen3 0.6B",
+            "description": "Fastest summary startup and the lightest local GGUF option.",
+            "size_hint": "About 0.6 GB"
+          },
+          {
+            "id": "Qwen/Qwen3-1.7B-GGUF",
+            "model_id": "Qwen/Qwen3-1.7B-GGUF",
+            "quant": "Q8_0",
+            "file": "Qwen3-1.7B-Q8_0.gguf",
+            "download_url": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q8_0.gguf",
+            "label": "Preload Qwen3 1.7B",
+            "description": "Better quality starter summary model with a larger download.",
+            "size_hint": "About 1.8 GB"
+          }
+        ]
+      }
+    },
+    "slides": [
+      {
+        "title": "How to use the pipeline",
+        "body": "1. Open Meetings and add an audio or video file.\n2. Run the pipeline.\n3. Read transcript, edited text, and summary artifacts.\n4. Return to Settings later if you want stronger local models."
+      },
+      {
+        "title": "What to expect on first run",
+        "body": "The first start is slower because caches, models, and local runtimes warm up. If you selected extra downloads, wait for them to finish before the first serious test."
+      },
+      {
+        "title": "When scenarios are not obvious",
+        "body": "AUTO language usually works, but explicit language can be safer. Two-pass transcription is slower, but can help on hard recordings. Tiny is enough for smoke tests; stronger models are better for real meetings."
+      }
+    ],
+    "pro_teaser": {
+      "title": "What the paid version can add later",
+      "body": "Core Free stays focused on private local processing. Paid editions can unlock more workflow plugins and distribution options.",
+      "features": [
+        "management plugins for tasks, projects, agendas, and follow-up structures",
+        "extra cloud and local LLM providers",
+        "broader plugin catalog and packaged distribution flows",
+        "expanded automation around summaries, search, and integrations"
+      ],
+      "footer": "This portable build already works offline today. Your chosen settings and downloaded models stay inside the portable folder."
+    }
   }
 }

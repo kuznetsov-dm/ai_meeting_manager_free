@@ -34,6 +34,7 @@ class TestReleaseProfile(unittest.TestCase):
         self.assertEqual(profile.profile_id, "core_free")
         self.assertFalse(profile.package_management_enabled())
         self.assertFalse(profile.management_tab_visible())
+        self.assertEqual(profile.first_run_wizard().get("version"), 1)
         self.assertEqual(
             profile.bundled_plugin_ids(),
             (

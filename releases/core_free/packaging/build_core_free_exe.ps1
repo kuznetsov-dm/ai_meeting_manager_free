@@ -73,5 +73,10 @@ if (-not (Test-Path -LiteralPath $exePath -PathType Leaf)) {
   throw "missing_release_exe: $exePath"
 }
 
+$legacyPortableSetupPath = Join-Path $FinalOutputDir "AI Meeting Manager Free Portable Setup.exe"
+if (Test-Path -LiteralPath $legacyPortableSetupPath) {
+  Remove-Item -LiteralPath $legacyPortableSetupPath -Force
+}
+
 Write-Host "Core Free release bundle created at: $FinalOutputDir"
 Write-Host "Executable: $exePath"
