@@ -39,6 +39,7 @@
     "plugins/text_processing/minutes_heuristic_v2/minutes_heuristic_v2.py",
     "plugins/text_processing/minutes_heuristic_v2/plugin.json",
     "plugins/text_processing/semantic_refiner/plugin.json",
+    "plugins/text_processing/semantic_refiner/plugin_passport.json",
     "plugins/text_processing/semantic_refiner/semantic_refiner.py",
     "bin/ffmpeg/ffmpeg.exe",
     "bin/llama/ggml-base.dll",

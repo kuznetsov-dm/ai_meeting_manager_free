@@ -6,6 +6,15 @@
   "description": "Плагин выполняет интеллектуальную чистку текста, разбивает его на логические блоки и извлекает наиболее значимые ключевые слова (сущности и термины).",
   "ui_stage": "llm_processing",
   "capabilities": {
+    "models": {
+      "storage": "local",
+      "selection_requires_installed": false,
+      "managed_actions": {
+        "list": "list_models",
+        "pull": "download_model",
+        "remove": "remove_model"
+      }
+    },
     "ui": {
       "text_processing": {
         "group": "essentials"
@@ -21,7 +30,27 @@
   ],
   "artifacts": ["edited", "semantic_blocks", "important_keywords"],
   "ui_schema": {
-    "settings": []
+    "settings": [
+      {
+        "key": "embeddings_enabled",
+        "label": "Use embeddings",
+        "type": "bool",
+        "value": true
+      },
+      {
+        "key": "embeddings_model_id",
+        "label": "Embeddings model",
+        "type": "string",
+        "value": "intfloat/multilingual-e5-base",
+        "editable": true
+      },
+      {
+        "key": "embeddings_allow_download",
+        "label": "Allow automatic download",
+        "type": "bool",
+        "value": true
+      }
+    ]
   }
 }
 

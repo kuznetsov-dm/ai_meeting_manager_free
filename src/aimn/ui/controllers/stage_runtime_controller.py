@@ -111,6 +111,7 @@ class StageRuntimeController:
         stage_id: str,
         status: str,
         error: str,
+        message: str = "",
         progress: int | None,
         base_name: str,
         active_meeting_base_name: str,
@@ -135,6 +136,7 @@ class StageRuntimeController:
             progress_value = None
         state.progress = progress_value
         state.error = str(error or "")
+        state.last_message = str(message or "")
         if mapped == "running" and state.started_at is None:
             now = time.monotonic()
             state.started_at = now
@@ -144,7 +146,6 @@ class StageRuntimeController:
             state.started_at = None
             state.last_event_at = None
             state.last_event_type = ""
-            state.last_message = ""
         if mapped in {"running", "completed", "failed", "skipped"}:
             state.dirty = False
         return bool(meeting_key == active_meeting_base_name or not active_meeting_base_name)

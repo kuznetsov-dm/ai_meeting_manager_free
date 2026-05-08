@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import subprocess
 import sys
 import threading
@@ -12,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from huggingface_hub import snapshot_download
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
@@ -102,6 +101,7 @@ class PortableInstallerDialog(QDialog):
             "summary_progress": 0,
             "semantic_indeterminate": False,
             "errors": [],
+            "download_errors": [],
             "done": False,
             "target_dir": "",
         }
@@ -116,9 +116,10 @@ class PortableInstallerDialog(QDialog):
         self._transcription_language = "auto"
         self._two_pass = False
         self._launch_after_install = True
-        self._whisper_choice = self._default_choice("whisper")
-        self._semantic_choice = self._default_choice("semantic")
-        self._summary_choice = self._default_choice("summary")
+        self._create_desktop_shortcut = True
+        self._whisper_choices = self._default_choices("whisper")
+        self._semantic_choices = self._default_choices("semantic")
+        self._summary_choices = self._default_choices("summary")
 
         root = QVBoxLayout(self)
         root.setContentsMargins(16, 16, 16, 16)
@@ -133,10 +134,10 @@ class PortableInstallerDialog(QDialog):
         self._step_label = QLabel("")
         self._step_label.setObjectName("pipelineMetaLabel")
         nav.addWidget(self._step_label, 1)
-        self._back_btn = QPushButton("Назад")
+        self._back_btn = QPushButton("Back")
         self._back_btn.clicked.connect(self._go_back)
         nav.addWidget(self._back_btn, 0)
-        self._next_btn = QPushButton("Далее")
+        self._next_btn = QPushButton("Next")
         self._next_btn.clicked.connect(self._go_next)
         nav.addWidget(self._next_btn, 0)
         root.addLayout(nav, 0)
@@ -161,9 +162,9 @@ class PortableInstallerDialog(QDialog):
         layout.setSpacing(12)
 
         layout.addWidget(self._card(
-            "Установка portable-версии",
-            "Этот установщик сам развернет все папки и файлы приложения в выбранную папку, "
-            "сразу применит стартовые настройки и при желании докачает модели до первого запуска.",
+            "Portable setup",
+            "This installer extracts the portable app into the selected folder, applies first-run settings, "
+            "and can download optional models before the first launch.",
         ))
 
         target_card = QFrame(page)
@@ -171,18 +172,18 @@ class PortableInstallerDialog(QDialog):
         target_layout = QVBoxLayout(target_card)
         target_layout.setContentsMargins(16, 16, 16, 16)
         target_layout.setSpacing(8)
-        target_layout.addWidget(self._title("Куда установить"))
+        target_layout.addWidget(self._title("Install location"))
         row = QHBoxLayout()
         row.setContentsMargins(0, 0, 0, 0)
         row.setSpacing(8)
         self._target_edit = QLineEdit(self._target_dir)
         row.addWidget(self._target_edit, 1)
-        browse = QPushButton("Выбрать папку")
+        browse = QPushButton("Choose folder")
         browse.clicked.connect(self._pick_target_dir)
         row.addWidget(browse, 0)
         target_layout.addLayout(row)
         note = QLabel(
-            "Portable-режим не пишет системный installer-state. Приложение и модели будут лежать в выбранной папке."
+            "Portable mode keeps the application, settings, and downloaded models inside this folder."
         )
         note.setWordWrap(True)
         note.setObjectName("pipelineMetaLabel")
@@ -194,53 +195,52 @@ class PortableInstallerDialog(QDialog):
         prefs_layout = QVBoxLayout(prefs)
         prefs_layout.setContentsMargins(16, 16, 16, 16)
         prefs_layout.setSpacing(10)
-        prefs_layout.addWidget(self._title("Стартовые настройки"))
+        prefs_layout.addWidget(self._title("First-run settings"))
 
-        self._locale_buttons = self._choice_row(
+        self._ui_locale_buttons = self._choice_row(
             prefs_layout,
-            "Язык интерфейса",
+            "Application language",
             [
-                ("ru", "Русский"),
+                ("ru", "Russian"),
                 ("en", "English"),
             ],
             lambda value: self._set_attr("_ui_locale", value),
             self._ui_locale,
         )
-        self._theme_buttons = self._choice_row(
+        self._ui_theme_buttons = self._choice_row(
             prefs_layout,
-            "Тема",
+            "Theme",
             [
-                ("light", "Светлая"),
-                ("dark", "Тёмная"),
-                ("light_mono", "Светлая моно"),
-                ("dark_mono", "Тёмная моно"),
+                ("light", "Light"),
+                ("dark", "Dark"),
+                ("light_mono", "Light mono"),
+                ("dark_mono", "Dark mono"),
             ],
             lambda value: self._set_attr("_ui_theme", value),
             self._ui_theme,
         )
-        self._transcription_buttons = self._choice_row(
+        self._transcription_language_buttons = self._choice_row(
             prefs_layout,
-            "Язык транскрипции",
+            "Transcription language",
             [
-                ("auto", "AUTO"),
-                ("ru", "Русский"),
+                ("auto", "Auto"),
+                ("ru", "Russian"),
                 ("en", "English"),
             ],
             lambda value: self._set_attr("_transcription_language", value),
             self._transcription_language,
         )
         tx_note = QLabel(
-            "AUTO обычно работает хорошо. Для сложных или одноязычных записей надежнее указать язык явно."
+            "Auto usually works well. For predictable single-language audio, selecting the language explicitly is safer."
         )
         tx_note.setWordWrap(True)
         tx_note.setObjectName("pipelineMetaLabel")
         prefs_layout.addWidget(tx_note)
-        self._two_pass_box = QCheckBox("Включить two-pass transcription для сложного аудио")
+        self._two_pass_box = QCheckBox("Enable two-pass transcription for difficult audio")
         prefs_layout.addWidget(self._two_pass_box)
         layout.addWidget(prefs)
         layout.addStretch(1)
         return page
-
     def _build_models_page(self) -> QWidget:
         page = QWidget(self)
         layout = QVBoxLayout(page)
@@ -250,24 +250,20 @@ class PortableInstallerDialog(QDialog):
         layout.addWidget(self._section_card(
             "1. Whisper",
             dict(self._downloads.get("whisper") or {}),
-            lambda value: self._set_attr("_whisper_choice", value),
-            "_whisper_choice",
+            "_whisper_choices",
         ))
         layout.addWidget(self._section_card(
             "2. Semantic",
             dict(self._downloads.get("semantic") or {}),
-            lambda value: self._set_attr("_semantic_choice", value),
-            "_semantic_choice",
+            "_semantic_choices",
         ))
         layout.addWidget(self._section_card(
             "3. Summary",
             dict(self._downloads.get("summary") or {}),
-            lambda value: self._set_attr("_summary_choice", value),
-            "_summary_choice",
+            "_summary_choices",
         ))
         note = QLabel(
-            "Пока вы будете читать короткую инструкцию на следующем шаге, установщик распакует приложение "
-            "и начнет загрузку выбранных моделей."
+            "On the next step the installer extracts the app and downloads any selected optional models."
         )
         note.setWordWrap(True)
         note.setObjectName("pipelineMetaLabel")
@@ -286,8 +282,8 @@ class PortableInstallerDialog(QDialog):
         left_layout = QVBoxLayout(left)
         left_layout.setContentsMargins(16, 16, 16, 16)
         left_layout.setSpacing(10)
-        left_layout.addWidget(self._title("Установка и загрузка моделей"))
-        self._install_message = QLabel("Установка еще не началась.")
+        left_layout.addWidget(self._title("Install and download models"))
+        self._install_message = QLabel("Installation has not started yet.")
         self._install_message.setWordWrap(True)
         left_layout.addWidget(self._install_message)
 
@@ -295,14 +291,17 @@ class PortableInstallerDialog(QDialog):
         self._overall_bar.setRange(0, 100)
         left_layout.addWidget(self._overall_bar)
 
-        self._extract_bar = self._labeled_progress(left_layout, "Распаковка приложения")
-        self._whisper_bar = self._labeled_progress(left_layout, "Whisper")
-        self._semantic_bar = self._labeled_progress(left_layout, "Semantic")
-        self._summary_bar = self._labeled_progress(left_layout, "Summary")
+        self._extract_bar = self._labeled_progress(left_layout, "Extract application")
+        self._whisper_bar = self._labeled_progress(left_layout, "Whisper models")
+        self._semantic_bar = self._labeled_progress(left_layout, "Embedding models")
+        self._summary_bar = self._labeled_progress(left_layout, "Summary models")
 
-        self._launch_box = QCheckBox("После установки сразу запустить приложение")
+        self._launch_box = QCheckBox("Launch the app after installation")
         self._launch_box.setChecked(True)
         left_layout.addWidget(self._launch_box)
+        self._shortcut_box = QCheckBox("Create a desktop shortcut")
+        self._shortcut_box.setChecked(True)
+        left_layout.addWidget(self._shortcut_box)
         left_layout.addStretch(1)
         layout.addWidget(left, 1)
 
@@ -311,7 +310,7 @@ class PortableInstallerDialog(QDialog):
         right_layout = QVBoxLayout(right)
         right_layout.setContentsMargins(16, 16, 16, 16)
         right_layout.setSpacing(10)
-        right_layout.addWidget(self._title("Кратко как пользоваться"))
+        right_layout.addWidget(self._title("Quick start"))
         self._slides_box = QTextEdit(right)
         self._slides_box.setReadOnly(True)
         self._slides_box.setPlainText(self._slides_text())
@@ -326,20 +325,18 @@ class PortableInstallerDialog(QDialog):
             right_layout.addWidget(teaser, 0)
         layout.addWidget(right, 1)
         return page
-
     def _build_finish_page(self) -> QWidget:
         page = QWidget(self)
         layout = QVBoxLayout(page)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(12)
         self._finish_card = self._card(
-            "Установка завершена",
-            "Portable-версия развернута. Можно запускать приложение из установленной папки.",
+            "Installation complete",
+            "The portable app has been installed. You can run it from the selected folder.",
         )
         layout.addWidget(self._finish_card)
         layout.addStretch(1)
         return page
-
     def _title(self, text: str) -> QLabel:
         label = QLabel(text)
         label.setObjectName("panelTitle")
@@ -377,13 +374,13 @@ class PortableInstallerDialog(QDialog):
         self._apply_button_group_state(buttons, selected)
         return buttons
 
-    def _section_card(self, fallback_title: str, spec: dict[str, Any], on_pick, attr_name: str) -> QFrame:
+    def _section_card(self, fallback_title: str, spec: dict[str, Any], attr_name: str) -> QFrame:
         title = str(spec.get("title", "") or fallback_title).strip() or fallback_title
         description = str(spec.get("description", "") or "").strip()
         card = self._card(title, description)
         layout = card.layout()
         options = spec.get("options")
-        buttons: dict[str, QPushButton] = {}
+        buttons: dict[str, QCheckBox] = {}
         for option in options if isinstance(options, list) else []:
             if not isinstance(option, dict):
                 continue
@@ -398,9 +395,10 @@ class PortableInstallerDialog(QDialog):
             header = QHBoxLayout()
             header.setContentsMargins(0, 0, 0, 0)
             header.setSpacing(8)
-            btn = QPushButton(str(option.get("label", option_id) or option_id))
-            btn.setCheckable(True)
-            btn.clicked.connect(lambda _checked=False, picked=option_id: on_pick(picked))
+            btn = QCheckBox(str(option.get("label", option_id) or option_id))
+            btn.stateChanged.connect(
+                lambda _state=0, picked=option_id: self._sync_multi_choice(attr_name, picked)
+            )
             header.addWidget(btn, 0)
             size_hint = str(option.get("size_hint", "") or "").strip()
             if size_hint:
@@ -415,7 +413,7 @@ class PortableInstallerDialog(QDialog):
             inner_layout.addWidget(desc)
             layout.addWidget(inner)
             buttons[option_id] = btn
-        self._apply_button_group_state(buttons, str(getattr(self, attr_name, "") or ""))
+        self._apply_check_group_state(buttons, list(getattr(self, attr_name, []) or []))
         setattr(self, f"{attr_name}_buttons", buttons)
         return card
 
@@ -434,23 +432,22 @@ class PortableInstallerDialog(QDialog):
         for index, slide in enumerate(slides if isinstance(slides, list) else [], start=1):
             if not isinstance(slide, dict):
                 continue
-            title = str(slide.get("title", "") or f"Шаг {index}").strip()
+            title = str(slide.get("title", "") or f"Step {index}").strip()
             body = str(slide.get("body", "") or "").strip()
             parts.append(f"{index}. {title}\n{body}")
         if not parts:
             parts.append(
-                "1. Добавьте аудио или видео файл.\n"
-                "2. Запустите pipeline.\n"
-                "3. Дождитесь транскрипции, semantic-обработки и summary."
+                "1. Add an audio or video file.\n"
+                "2. Run the pipeline.\n"
+                "3. Review transcript, semantic cleanup, and summary artifacts."
             )
         parts.append(
-            "\nВажно:\n"
-            "- первый запуск дольше обычного\n"
-            "- пока модели загружаются, приложение может работать медленнее\n"
-            "- для реальной оценки дождитесь завершения загрузок"
+            "\nNotes:\n"
+            "- The first launch can be slower while caches warm up.\n"
+            "- Optional models can be downloaded now or later in Settings.\n"
+            "- If a download fails, the app is still installed."
         )
         return "\n\n".join(parts)
-
     def _default_choice(self, section_key: str) -> str:
         section = dict(self._downloads.get(section_key) or {})
         for option in section.get("options") if isinstance(section.get("options"), list) else []:
@@ -462,9 +459,13 @@ class PortableInstallerDialog(QDialog):
                 return str(option.get("id", "")).strip()
         return ""
 
+    def _default_choices(self, section_key: str) -> list[str]:
+        choice = self._default_choice(section_key)
+        return [choice] if choice else []
+
     def _pick_target_dir(self) -> None:
         current = str(self._target_edit.text() or "").strip() or self._target_dir
-        picked = QFileDialog.getExistingDirectory(self, "Выберите папку установки", current)
+        picked = QFileDialog.getExistingDirectory(self, "Choose install folder", current)
         if picked:
             self._target_edit.setText(picked)
 
@@ -479,6 +480,41 @@ class PortableInstallerDialog(QDialog):
             active = key == selected
             button.setChecked(active)
 
+    def _sync_multi_choice(self, attr_name: str, _changed_id: str) -> None:
+        buttons = getattr(self, f"{attr_name}_buttons", None)
+        if not isinstance(buttons, dict):
+            return
+        section_key = {
+            "_whisper_choices": "whisper",
+            "_semantic_choices": "semantic",
+            "_summary_choices": "summary",
+        }.get(attr_name, "")
+        changed_option = self._selected_option(section_key, _changed_id) if section_key else None
+        changed_is_noop = str((changed_option or {}).get("mode", "")).strip() in {
+            "keep_bundled",
+            "skip",
+        }
+        if changed_is_noop and buttons.get(_changed_id) and buttons[_changed_id].isChecked():
+            for key, button in buttons.items():
+                if key != _changed_id:
+                    button.blockSignals(True)
+                    button.setChecked(False)
+                    button.blockSignals(False)
+        elif not changed_is_noop and buttons.get(_changed_id) and buttons[_changed_id].isChecked():
+            for key, button in buttons.items():
+                option = self._selected_option(section_key, key) if section_key else None
+                if str((option or {}).get("mode", "")).strip() in {"keep_bundled", "skip"}:
+                    button.blockSignals(True)
+                    button.setChecked(False)
+                    button.blockSignals(False)
+        selected = [key for key, button in buttons.items() if bool(button.isChecked())]
+        setattr(self, attr_name, selected)
+
+    def _apply_check_group_state(self, buttons: dict[str, QCheckBox], selected: list[str]) -> None:
+        selected_set = {str(value) for value in selected}
+        for key, button in buttons.items():
+            button.setChecked(key in selected_set)
+
     def _go_back(self) -> None:
         index = self._stack.currentIndex()
         if index <= 0 or self._worker is not None:
@@ -492,7 +528,7 @@ class PortableInstallerDialog(QDialog):
             self._target_dir = str(self._target_edit.text() or "").strip()
             self._two_pass = bool(self._two_pass_box.isChecked())
             if not self._target_dir:
-                QMessageBox.warning(self, "Папка установки", "Укажите папку, куда развернуть portable-версию.")
+                QMessageBox.warning(self, "Install folder", "Choose a folder for the portable app.")
                 return
             self._stack.setCurrentIndex(1)
             self._update_nav()
@@ -527,39 +563,40 @@ class PortableInstallerDialog(QDialog):
             return True
         answer = QMessageBox.question(
             self,
-            "Папка не пуста",
-            "Выбранная папка уже содержит файлы. Продолжить и перезаписать совпадающие файлы portable-версии?",
+            "Folder is not empty",
+            "The selected folder already contains files. Continue and overwrite matching portable app files?",
         )
         return answer == QMessageBox.Yes
 
     def _update_nav(self) -> None:
         index = self._stack.currentIndex()
         labels = {
-            0: "Шаг 1 из 4: папка и стартовые настройки",
-            1: "Шаг 2 из 4: выбор моделей",
-            2: "Шаг 3 из 4: установка и загрузки",
-            3: "Шаг 4 из 4: завершение",
+            0: "Step 1 of 4: folder and first-run settings",
+            1: "Step 2 of 4: model selection",
+            2: "Step 3 of 4: install and downloads",
+            3: "Step 4 of 4: finish",
         }
         self._step_label.setText(labels.get(index, ""))
         self._back_btn.setVisible(index > 0 and index < 2 and self._worker is None)
         if index == 2:
             with self._state_lock:
                 done = bool(self._install_state.get("done", False))
-            self._next_btn.setText("Завершить" if done else "Установка...")
+            self._next_btn.setText("Finish" if done else "Installing...")
             self._next_btn.setEnabled(done)
             return
         if index == 3:
-            self._next_btn.setText("Готово")
+            self._next_btn.setText("Done")
             self._next_btn.setEnabled(True)
             self._back_btn.setVisible(False)
             return
-        self._next_btn.setText("Далее")
+        self._next_btn.setText("Next")
         self._next_btn.setEnabled(True)
 
     def _start_install(self) -> None:
         if self._worker is not None:
             return
         self._launch_after_install = bool(self._launch_box.isChecked())
+        self._create_desktop_shortcut = bool(self._shortcut_box.isChecked())
         self._worker = threading.Thread(target=self._run_install, name="aimn.portable_installer", daemon=True)
         self._worker.start()
         self._refresh_install_progress()
@@ -568,14 +605,16 @@ class PortableInstallerDialog(QDialog):
         target_dir = Path(self._target_dir)
         try:
             target_dir.mkdir(parents=True, exist_ok=True)
-            self._set_state(phase="extract", message="Распаковка portable bundle", overall_progress=1)
+            self._set_state(phase="extract", message="Extracting portable bundle", overall_progress=1)
             self._extract_payload(target_dir)
-            self._set_state(phase="settings", message="Применение стартовых настроек", overall_progress=45)
+            self._set_state(phase="settings", message="Applying first-run settings", overall_progress=45)
             self._write_installed_settings(target_dir)
             self._download_optional_models(target_dir)
+            if self._create_desktop_shortcut:
+                self._create_desktop_shortcut_link(target_dir)
             self._set_state(
                 phase="done",
-                message="Установка завершена",
+                message="Installation complete",
                 overall_progress=100,
                 done=True,
                 target_dir=str(target_dir),
@@ -586,7 +625,7 @@ class PortableInstallerDialog(QDialog):
             errors = [str(exc)]
             self._set_state(
                 phase="error",
-                message=f"Установка завершилась с ошибкой: {exc}",
+                message=f"Installation failed: {exc}",
                 overall_progress=100,
                 done=True,
                 errors=errors,
@@ -640,66 +679,121 @@ class PortableInstallerDialog(QDialog):
         _write_json(pipeline_path, pipeline_payload)
 
     def _download_optional_models(self, target_dir: Path) -> None:
-        self._set_state(message="Проверка выбранных моделей", overall_progress=50)
+        self._set_state(message="Checking selected optional models", overall_progress=50)
 
-        whisper_option = self._selected_option("whisper", self._whisper_choice)
-        if whisper_option and str(whisper_option.get("mode", "")).strip() != "keep_bundled":
-            model_id = str(whisper_option.get("model_id", "") or whisper_option.get("id", "")).strip()
-            download_url = str(whisper_option.get("download_url", "") or "").strip()
-            file_name = str(whisper_option.get("file", "") or self._whisper_file_name(model_id)).strip()
-            if model_id and download_url and file_name:
-                self._set_state(message=f"Загрузка Whisper {model_id}", whisper_progress=1)
+        whisper_options = [
+            option for option in self._selected_options("whisper", self._whisper_choices)
+            if str(option.get("mode", "")).strip() != "keep_bundled"
+        ]
+        if whisper_options:
+            for index, whisper_option in enumerate(whisper_options, start=1):
+                model_id = str(whisper_option.get("model_id", "") or whisper_option.get("id", "")).strip()
+                download_url = str(whisper_option.get("download_url", "") or "").strip()
+                file_name = str(whisper_option.get("file", "") or self._whisper_file_name(model_id)).strip()
+                if not (model_id and download_url and file_name):
+                    continue
                 target = target_dir / "models" / "whisper" / file_name
-                _download_file(
-                    download_url,
-                    target,
-                    progress_cb=lambda value: self._set_state(
-                        whisper_progress=max(1, int(value * 100)),
-                        overall_progress=50 + int(value * 10),
-                    ),
-                )
-                self._activate_whisper_model(target_dir, model_id)
-                self._set_state(whisper_progress=100, overall_progress=60)
+                try:
+                    self._set_state(message=f"Downloading Whisper model {model_id}", whisper_progress=1)
+                    _download_file(
+                        download_url,
+                        target,
+                        progress_cb=lambda value: self._set_state(
+                            whisper_progress=max(1, int(value * 100)),
+                            overall_progress=50 + int(value * 10),
+                        ),
+                    )
+                    self._activate_whisper_model(target_dir, model_id)
+                except Exception as exc:
+                    self._record_download_error(
+                        "Whisper",
+                        model_id,
+                        exc,
+                        source=download_url,
+                        target=target,
+                    )
+                finally:
+                    self._set_state(
+                        whisper_progress=int(index * 100 / max(1, len(whisper_options))),
+                        overall_progress=60,
+                    )
         else:
             self._set_state(whisper_progress=100)
 
-        semantic_option = self._selected_option("semantic", self._semantic_choice)
-        if semantic_option and str(semantic_option.get("mode", "")).strip() != "skip":
-            model_id = str(semantic_option.get("model_id", "") or "").strip()
-            if model_id:
-                self._set_state(
-                    message=f"Загрузка semantic-модели {model_id}",
-                    semantic_indeterminate=True,
-                    overall_progress=62,
-                )
-                snapshot_download(repo_id=model_id, cache_dir=str(target_dir / "models" / "embeddings"))
-                self._activate_semantic_model(target_dir, model_id)
-                self._set_state(semantic_indeterminate=False, overall_progress=80)
+        semantic_options = [
+            option for option in self._selected_options("semantic", self._semantic_choices)
+            if str(option.get("mode", "")).strip() != "skip"
+        ]
+        if semantic_options:
+            for semantic_option in semantic_options:
+                model_id = str(semantic_option.get("model_id", "") or "").strip()
+                if not model_id:
+                    continue
+                target = target_dir / "models" / "embeddings"
+                try:
+                    self._set_state(
+                        message=f"Downloading embedding model {model_id}",
+                        semantic_indeterminate=True,
+                        overall_progress=62,
+                    )
+                    snapshot_download(repo_id=model_id, cache_dir=str(target))
+                    self._activate_semantic_model(target_dir, model_id)
+                except Exception as exc:
+                    self._record_download_error(
+                        "Embeddings",
+                        model_id,
+                        exc,
+                        source=f"repo:{model_id}",
+                        target=target,
+                    )
+                finally:
+                    self._set_state(semantic_indeterminate=False, overall_progress=80)
         else:
             self._set_state(semantic_indeterminate=False)
 
-        summary_option = self._selected_option("summary", self._summary_choice)
-        if summary_option and str(summary_option.get("mode", "")).strip() != "skip":
-            model_id = str(summary_option.get("model_id", "") or "").strip()
-            download_url = str(summary_option.get("download_url", "") or "").strip()
-            file_name = str(summary_option.get("file", "") or "").strip()
-            quant = str(summary_option.get("quant", "") or "Q4_K_M").strip() or "Q4_K_M"
-            if model_id and download_url and file_name:
-                self._set_state(message=f"Загрузка summary-модели {model_id}", summary_progress=1, overall_progress=82)
+        summary_options = [
+            option for option in self._selected_options("summary", self._summary_choices)
+            if str(option.get("mode", "")).strip() != "skip"
+        ]
+        if summary_options:
+            for index, summary_option in enumerate(summary_options, start=1):
+                model_id = str(summary_option.get("model_id", "") or "").strip()
+                download_url = str(summary_option.get("download_url", "") or "").strip()
+                file_name = str(summary_option.get("file", "") or "").strip()
+                quant = str(summary_option.get("quant", "") or "Q4_K_M").strip() or "Q4_K_M"
+                if not (model_id and download_url and file_name):
+                    continue
                 target = target_dir / "models" / "llama" / file_name
-                _download_file(
-                    download_url,
-                    target,
-                    progress_cb=lambda value: self._set_state(
-                        summary_progress=max(1, int(value * 100)),
-                        overall_progress=82 + int(value * 16),
-                    ),
-                )
-                self._activate_summary_model(target_dir, model_id, quant)
-                self._set_state(summary_progress=100, overall_progress=98)
+                try:
+                    self._set_state(
+                        message=f"Downloading summary model {model_id}",
+                        summary_progress=1,
+                        overall_progress=82,
+                    )
+                    _download_file(
+                        download_url,
+                        target,
+                        progress_cb=lambda value: self._set_state(
+                            summary_progress=max(1, int(value * 100)),
+                            overall_progress=82 + int(value * 16),
+                        ),
+                    )
+                    self._activate_summary_model(target_dir, model_id, quant)
+                except Exception as exc:
+                    self._record_download_error(
+                        "Summary",
+                        model_id,
+                        exc,
+                        source=download_url,
+                        target=target,
+                    )
+                finally:
+                    self._set_state(
+                        summary_progress=int(index * 100 / max(1, len(summary_options))),
+                        overall_progress=98,
+                    )
         else:
             self._set_state(summary_progress=100)
-
     def _activate_whisper_model(self, target_dir: Path, model_id: str) -> None:
         tx_settings_path = target_dir / "config" / "settings" / "plugins" / "transcription.whisperadvanced.json"
         tx_payload = _load_json(tx_settings_path)
@@ -785,12 +879,108 @@ class PortableInstallerDialog(QDialog):
             except Exception:
                 return
 
+    def _create_desktop_shortcut_link(self, target_dir: Path) -> None:
+        exe = target_dir / "AI Meeting Manager Core Free.exe"
+        if not exe.exists():
+            return
+        desktop = Path.home() / "Desktop"
+        if not desktop.exists():
+            desktop = Path(os.environ.get("USERPROFILE", str(Path.home()))) / "Desktop"
+        shortcut = desktop / "AI Meeting Manager Core Free.lnk"
+        shortcut_arg = self._ps_single_quoted(str(shortcut))
+        exe_arg = self._ps_single_quoted(str(exe))
+        target_dir_arg = self._ps_single_quoted(str(target_dir))
+        script = (
+            "$shell = New-Object -ComObject WScript.Shell; "
+            f"$shortcut = $shell.CreateShortcut({shortcut_arg}); "
+            f"$shortcut.TargetPath = {exe_arg}; "
+            f"$shortcut.WorkingDirectory = {target_dir_arg}; "
+            f"$shortcut.IconLocation = {exe_arg}; "
+            "$shortcut.Save()"
+        )
+        try:
+            subprocess.run(
+                ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", script],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except Exception as exc:
+            self._record_download_error(
+                "Desktop shortcut",
+                str(shortcut),
+                exc,
+                target=shortcut,
+            )
+
+    @staticmethod
+    def _ps_single_quoted(value: str) -> str:
+        return "'" + str(value).replace("'", "''") + "'"
+
     def _selected_option(self, section_key: str, option_id: str) -> dict[str, Any] | None:
         section = dict(self._downloads.get(section_key) or {})
         for option in section.get("options") if isinstance(section.get("options"), list) else []:
             if isinstance(option, dict) and str(option.get("id", "")).strip() == str(option_id or "").strip():
                 return dict(option)
         return None
+
+    def _selected_options(self, section_key: str, option_ids: list[str]) -> list[dict[str, Any]]:
+        requested = {str(option_id or "").strip() for option_id in option_ids}
+        if not requested:
+            return []
+        section = dict(self._downloads.get(section_key) or {})
+        selected: list[dict[str, Any]] = []
+        for option in section.get("options") if isinstance(section.get("options"), list) else []:
+            if not isinstance(option, dict):
+                continue
+            option_id = str(option.get("id", "")).strip()
+            if option_id in requested:
+                selected.append(dict(option))
+        return selected
+
+    def _record_download_error(
+        self,
+        category: str,
+        model_id: str,
+        exc: Exception,
+        *,
+        source: str | Path | None = None,
+        target: str | Path | None = None,
+    ) -> None:
+        model = str(model_id or "unknown").strip() or "unknown"
+        parts = [
+            f"{category} model {model}",
+            f"error={exc}",
+            "install_continued=true",
+        ]
+        if source:
+            parts.append(f"source={source}")
+        if target:
+            parts.append(f"target={target}")
+        hint = self._download_error_hint(exc)
+        if hint:
+            parts.append(f"hint={hint}")
+        message = " | ".join(parts)
+        with self._state_lock:
+            existing = self._install_state.get("download_errors")
+            if not isinstance(existing, list):
+                existing = []
+            existing.append(message)
+            self._install_state["download_errors"] = existing
+            self._install_state["errors"] = list(existing)
+
+    @staticmethod
+    def _download_error_hint(exc: Exception) -> str:
+        text = str(exc)
+        lowered = text.lower()
+        if "certificate_verify_failed" in lowered or "self-signed certificate" in lowered:
+            return (
+                "Certificate verification failed. Check corporate proxy/root CA, "
+                "or download this model later from Settings."
+            )
+        if "connecterror" in lowered or "timed out" in lowered or "urlopen error" in lowered:
+            return "Network/proxy connection failed. Check connectivity or download later from Settings."
+        return ""
 
     @staticmethod
     def _whisper_file_name(model_id: str) -> str:
@@ -833,14 +1023,18 @@ class PortableInstallerDialog(QDialog):
         if bool(state.get("done", False)) and self._stack.currentIndex() == 2:
             errors = state.get("errors")
             if isinstance(errors, list) and errors:
-                body = "Установка завершилась с ошибками:\n\n" + "\n".join(str(item) for item in errors)
+                body = (
+                    "The app was installed, but some optional model downloads failed.\n"
+                    "You can download those models later from Settings.\n\n"
+                    + "\n".join(str(item) for item in errors)
+                )
             else:
                 body = (
-                    "Portable-версия развернута в папку:\n"
+                    "The portable app was installed in:\n"
                     f"{state.get('target_dir', self._target_dir)}\n\n"
-                    "Теперь приложение можно запускать из установленной папки."
+                    "You can now run the app from the install folder."
                 )
-            self._replace_finish_card("Установка завершена", body)
+            self._replace_finish_card("Installation complete", body)
 
     def _replace_finish_card(self, title: str, body: str) -> None:
         parent_layout = self._finish_card.parentWidget().layout()
@@ -859,10 +1053,12 @@ def main() -> int:
     if not payload_zip.exists():
         QMessageBox.critical(None, "Installer", f"Payload archive not found:\n{payload_zip}")
         return 2
-    app = QApplication(sys.argv)
+    _app = QApplication(sys.argv)
     dialog = PortableInstallerDialog(payload_zip=payload_zip, manifest_path=manifest)
     return 0 if dialog.exec() == QDialog.Accepted else 1
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+

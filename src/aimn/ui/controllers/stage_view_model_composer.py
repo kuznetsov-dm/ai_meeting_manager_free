@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 import re
+from collections.abc import Callable
 
 from aimn.ui.controllers.stage_model_normalization import parse_variant_selection_state
 from aimn.ui.controllers.stage_runtime_controller import StageRuntimeState
@@ -72,6 +72,12 @@ class StageViewModelComposer:
 
         progress = state.progress
         error = state.error or None
+        status_label = ""
+        if status in {"failed", "skipped"} and _is_missing_plugin_notice(state.error, state.last_message):
+            status = "idle"
+            progress = None
+            error = _missing_plugin_hint(state.error, state.last_message)
+            status_label = "Add plugin"
 
         config_data = self._config_data_provider()
 
@@ -435,6 +441,11 @@ class StageViewModelComposer:
             )
             if config_error:
                 error = config_error
+                if _is_missing_plugin_notice(config_error):
+                    ui_metadata["status_label"] = "Add plugin"
+
+        if status_label:
+            ui_metadata["status_label"] = status_label
 
         return StageViewModel(
             stage_id=stage_id,
@@ -518,6 +529,26 @@ def _warning_marker(value: object) -> str:
         if separator in text:
             text = text.split(separator, 1)[0].strip()
     return text
+
+
+def _is_missing_plugin_notice(*values: object) -> bool:
+    text = " ".join(str(value or "").strip().lower() for value in values if str(value or "").strip())
+    if not text:
+        return False
+    markers = (
+        "no_plugin",
+        "no handler",
+        "no_handler",
+        "plugin_not_available",
+        "plugin unavailable",
+        "not available/enabled",
+    )
+    return any(marker in text for marker in markers)
+
+
+def _missing_plugin_hint(*values: object) -> str:
+    text = " ".join(str(value or "").strip() for value in values if str(value or "").strip())
+    return text or "Add or enable a plugin for this stage"
 
 
 def _format_warning_for_display(value: object) -> str:

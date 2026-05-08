@@ -14,6 +14,7 @@ $repoRoot = (Resolve-Path (Join-Path $releaseRoot "..\..")).Path
 $buildBundleScript = Join-Path $packagingRoot "build_core_free_exe.ps1"
 $installerScript = Join-Path $packagingRoot "core_free_portable_installer.py"
 $manifestPath = Join-Path $releaseRoot "manifest.json"
+$iconPath = Join-Path $repoRoot "src\aimn\ui\assets\app_icon.ico"
 
 if (-not $ReleaseDir) {
   $ReleaseDir = Join-Path $repoRoot "output_build\core_free_release"
@@ -63,6 +64,7 @@ try {
     --name $exeName `
     --distpath $resolvedDistRoot `
     --workpath $workPath `
+    --icon $iconPath `
     --collect-data huggingface_hub `
     --collect-submodules huggingface_hub `
     --add-data "$PayloadZipPath;." `

@@ -3,17 +3,38 @@ from __future__ import annotations
 import json
 import math
 import re
+import shutil
 from collections import Counter
+from pathlib import Path
 from typing import Any
+
+from huggingface_hub import snapshot_download
 
 from aimn.plugins.interfaces import (
     KIND_EDITED,
+    ActionDescriptor,
+    ActionResult,
     ArtifactSchema,
     HookContext,
     PluginOutput,
     PluginResult,
 )
 from plugins.text_processing import utils
+
+_EMBEDDING_MODELS: dict[str, dict[str, str]] = {
+    "intfloat/multilingual-e5-small": {
+        "product_name": "Multilingual E5 Small",
+        "description": "Fast multilingual embedding model for semantic cleanup and keyword extraction.",
+        "size_hint": "~0.5 GB",
+        "source_url": "https://huggingface.co/intfloat/multilingual-e5-small",
+    },
+    "intfloat/multilingual-e5-base": {
+        "product_name": "Multilingual E5 Base",
+        "description": "Stronger multilingual embedding model for semantic cleanup and keyword extraction.",
+        "size_hint": "~1.1 GB",
+        "source_url": "https://huggingface.co/intfloat/multilingual-e5-base",
+    },
+}
 
 _EN_STOPWORDS = {
     "the",
@@ -45,6 +66,7 @@ class Plugin:
             ArtifactSchema(content_type="application/json", user_visible=True),
         )
         ctx.register_hook_handler("postprocess.after_transcribe", self.hook_postprocess, priority=50)
+        ctx.register_actions(action_descriptors)
 
     def hook_postprocess(self, ctx: HookContext) -> PluginResult:
         text = str(ctx.input_text or "").strip()
@@ -74,6 +96,150 @@ class Plugin:
             embeddings_enabled=_as_bool(ctx.get_setting("embeddings_enabled", True), default=True),
         )
         return plugin.run(ctx)
+
+
+def action_descriptors() -> list[ActionDescriptor]:
+    return [
+        ActionDescriptor(
+            action_id="list_models",
+            label="Refresh Models",
+            description="Load embedding model catalog and local installation status.",
+            params_schema={"fields": []},
+            dangerous=False,
+            handler=action_list_models,
+        ),
+        ActionDescriptor(
+            action_id="download_model",
+            label="Download Model",
+            description="Download selected Hugging Face embedding model snapshot.",
+            params_schema={"fields": [{"id": "model_id", "type": "string", "required": True}]},
+            dangerous=False,
+            handler=action_download_model,
+        ),
+        ActionDescriptor(
+            action_id="remove_model",
+            label="Remove Model",
+            description="Remove selected local embedding model snapshot.",
+            params_schema={"fields": [{"id": "model_id", "type": "string", "required": True}]},
+            dangerous=True,
+            handler=action_remove_model,
+        ),
+    ]
+
+
+def action_list_models(settings: dict, _params: dict) -> ActionResult:
+    rows = _configured_model_rows(settings)
+    models: list[dict[str, object]] = []
+    for model_id, meta in _model_catalog(rows).items():
+        installed = _model_installed(model_id)
+        models.append(
+            {
+                "model_id": model_id,
+                "product_name": str(meta.get("product_name", "") or model_id),
+                "description": str(meta.get("description", "") or ""),
+                "size_hint": str(meta.get("size_hint", "") or ""),
+                "enabled": _model_enabled(rows, model_id),
+                "installed": bool(installed),
+                "status": "installed" if installed else "",
+                "availability_status": "ready" if installed else "needs_setup",
+                "source_url": str(meta.get("source_url", "") or f"https://huggingface.co/{model_id}"),
+                "download_url": str(meta.get("download_url", "") or f"https://huggingface.co/{model_id}"),
+            }
+        )
+    return ActionResult(status="success", message="models_loaded", data={"models": models})
+
+
+def action_download_model(settings: dict, params: dict) -> ActionResult:
+    model_id = str(params.get("model_id", "") or "").strip()
+    if model_id not in _model_catalog(_configured_model_rows(settings)):
+        return ActionResult(status="error", message="model_not_supported", data={"model_id": model_id})
+    target_root = Path(utils.get_models_dir())
+    target_root.mkdir(parents=True, exist_ok=True)
+    snapshot_download(repo_id=model_id, cache_dir=str(target_root))
+    refreshed = action_list_models(settings, {})
+    data = dict(refreshed.data or {}) if isinstance(refreshed.data, dict) else {}
+    data["model_id"] = model_id
+    return ActionResult(status="success", message="model_downloaded", data=data)
+
+
+def action_remove_model(settings: dict, params: dict) -> ActionResult:
+    model_id = str(params.get("model_id", "") or "").strip()
+    if not model_id:
+        return ActionResult(status="error", message="model_id_missing")
+    removed = False
+    for path in _model_cache_paths(model_id):
+        try:
+            if path.is_dir():
+                shutil.rmtree(path)
+                removed = True
+            elif path.exists():
+                path.unlink()
+                removed = True
+        except Exception as exc:
+            return ActionResult(status="error", message=str(exc), data={"model_id": model_id})
+    refreshed = action_list_models(settings, {})
+    data = dict(refreshed.data or {}) if isinstance(refreshed.data, dict) else {}
+    data["model_id"] = model_id
+    return ActionResult(
+        status="success",
+        message="model_removed" if removed else "model_not_found_for_remove",
+        data=data,
+    )
+
+
+def _configured_model_rows(settings: dict) -> list[dict]:
+    raw = settings.get("models") if isinstance(settings, dict) else None
+    return [dict(item) for item in raw if isinstance(item, dict)] if isinstance(raw, list) else []
+
+
+def _model_catalog(rows: list[dict]) -> dict[str, dict[str, str]]:
+    catalog = {model_id: dict(meta) for model_id, meta in _EMBEDDING_MODELS.items()}
+    for row in rows:
+        model_id = str(row.get("model_id", "") or row.get("id", "")).strip()
+        if not model_id:
+            continue
+        merged = dict(catalog.get(model_id, {}))
+        merged.update(
+            {
+                "product_name": str(row.get("product_name", "") or row.get("name", "") or merged.get("product_name", "") or model_id),
+                "description": str(row.get("description", "") or merged.get("description", "")),
+                "size_hint": str(row.get("size_hint", "") or merged.get("size_hint", "")),
+                "source_url": str(row.get("source_url", "") or merged.get("source_url", "") or f"https://huggingface.co/{model_id}"),
+                "download_url": str(row.get("download_url", "") or merged.get("download_url", "") or f"https://huggingface.co/{model_id}"),
+            }
+        )
+        catalog[model_id] = merged
+    return catalog
+
+
+def _model_enabled(rows: list[dict], model_id: str) -> bool:
+    for row in rows:
+        if str(row.get("model_id", "") or row.get("id", "")).strip() == model_id:
+            return bool(row.get("enabled", False))
+    return False
+
+
+def _model_cache_paths(model_id: str) -> list[Path]:
+    root = Path(utils.get_models_dir())
+    hf_slug = str(model_id or "").replace("/", "--")
+    human_slug = str(model_id or "").replace("/", "_")
+    return [
+        root / f"models--{hf_slug}",
+        root / human_slug,
+        root / str(model_id or ""),
+    ]
+
+
+def _model_installed(model_id: str) -> bool:
+    for path in _model_cache_paths(model_id):
+        if not path.exists():
+            continue
+        if (path / "config.json").exists():
+            return True
+        snapshots = path / "snapshots"
+        if snapshots.exists() and any((item / "config.json").exists() for item in snapshots.iterdir() if item.is_dir()):
+            return True
+    return False
 
 
 class SemanticRefiner:
@@ -217,7 +383,7 @@ class SemanticRefiner:
         blocks: list[dict[str, Any]] = []
         current_sentences: list[str] = []
         current_vectors: list[list[float]] = []
-        for sentence, vector in zip(sentences, vectors):
+        for sentence, vector in zip(sentences, vectors, strict=False):
             normalized = _normalize_vector(vector)
             if not normalized:
                 continue
@@ -275,7 +441,6 @@ class SemanticRefiner:
             return []
         if not vectors:
             return candidates[: min(5, self.keyword_limit)]
-        centroid = _average_vector(vectors)
         ranked = candidates
         return ranked[: min(5, self.keyword_limit)] or candidates[: min(5, self.keyword_limit)]
 
@@ -312,7 +477,7 @@ class SemanticRefiner:
             return candidates
         candidate_vectors = self._encode_rows(model, candidates)
         scored: list[tuple[float, int, str]] = []
-        for index, (candidate, vector) in enumerate(zip(candidates, candidate_vectors)):
+        for index, (candidate, vector) in enumerate(zip(candidates, candidate_vectors, strict=False)):
             normalized = _normalize_vector(vector)
             if not normalized:
                 continue
@@ -340,7 +505,7 @@ class SemanticRefiner:
             seen.add(normalized)
             candidates.append(phrase)
 
-        for a, b in zip(tokens, tokens[1:]):
+        for a, b in zip(tokens, tokens[1:], strict=False):
             if a in stops or b in stops or a in _EN_STOPWORDS or b in _EN_STOPWORDS:
                 continue
             if len(a) < 4 or len(b) < 4:
@@ -441,7 +606,7 @@ def _average_vector(vectors: list[list[float]]) -> list[float]:
 def _cosine_similarity(left: list[float], right: list[float]) -> float:
     if not left or not right or len(left) != len(right):
         return 0.0
-    return sum(a * b for a, b in zip(left, right))
+    return sum(a * b for a, b in zip(left, right, strict=False))
 
 
 def _merge_unique(first: list[str], second: list[str]) -> list[str]:

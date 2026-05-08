@@ -352,7 +352,9 @@ class WhisperAdvancedPlugin:
             if self.dtw_model:
                 cmd.extend(["--dtw", self.dtw_model])
 
-            if not ctx.progress_callback:
+            if ctx.progress_callback:
+                cmd.append("--print-progress")
+            else:
                 cmd.append("-np")
 
             output_lines: list[str] = []

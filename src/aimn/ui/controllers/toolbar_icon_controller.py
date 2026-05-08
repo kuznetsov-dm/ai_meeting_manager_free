@@ -22,6 +22,7 @@ class ToolbarIconController:
             ToolbarButtonIconSpec("_prev_btn", "prev", "search.prev", "Prev"),
             ToolbarButtonIconSpec("_next_btn", "next", "search.next", "Next"),
             ToolbarButtonIconSpec("_clear_btn", "clear", "search.clear", "Clear"),
+            ToolbarButtonIconSpec("_search_back_btn", "back", "search.back_to_text", "Back to text"),
             ToolbarButtonIconSpec("_logs_btn", "logs", "search.logs", "Logs"),
             ToolbarButtonIconSpec("_copy_btn", "copy", "search.copy", "Copy"),
             ToolbarButtonIconSpec("_copy_all_btn", "copy", "search.copy_all", "Copy All"),
@@ -76,6 +77,13 @@ class ToolbarIconController:
                     path, (QPointF(15.0, 5.0), QPointF(9.0, 12.0), QPointF(15.0, 19.0))
                 )
                 painter.drawPath(path)
+            elif kind_value == "back":
+                path = QPainterPath()
+                ToolbarIconController._draw_chevron(
+                    path, (QPointF(15.0, 5.0), QPointF(9.0, 12.0), QPointF(15.0, 19.0))
+                )
+                painter.drawPath(path)
+                painter.drawLine(QPointF(9.5, 12.0), QPointF(19.0, 12.0))
             elif kind_value == "next":
                 path = QPainterPath()
                 ToolbarIconController._draw_chevron(

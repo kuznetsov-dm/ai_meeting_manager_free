@@ -13,6 +13,36 @@ function Read-Text([string]$Path) {
   return Get-Content -LiteralPath $Path -Raw -Encoding UTF8
 }
 
+function New-WhisperSmokeWav([string]$Path) {
+  $sampleRate = 16000
+  $seconds = 1
+  $samples = $sampleRate * $seconds
+  $dataLength = $samples * 2
+  $writer = [System.IO.BinaryWriter]::new(
+    [System.IO.File]::Open($Path, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write)
+  )
+  try {
+    $writer.Write([System.Text.Encoding]::ASCII.GetBytes("RIFF"))
+    $writer.Write([int](36 + $dataLength))
+    $writer.Write([System.Text.Encoding]::ASCII.GetBytes("WAVE"))
+    $writer.Write([System.Text.Encoding]::ASCII.GetBytes("fmt "))
+    $writer.Write([int]16)
+    $writer.Write([int16]1)
+    $writer.Write([int16]1)
+    $writer.Write([int]$sampleRate)
+    $writer.Write([int]($sampleRate * 2))
+    $writer.Write([int16]2)
+    $writer.Write([int16]16)
+    $writer.Write([System.Text.Encoding]::ASCII.GetBytes("data"))
+    $writer.Write([int]$dataLength)
+    for ($i = 0; $i -lt $samples; $i++) {
+      $writer.Write([int16]0)
+    }
+  } finally {
+    $writer.Dispose()
+  }
+}
+
 $manifestPath = Join-Path $releaseRoot "manifest.json"
 $firstRunGuidePath = Join-Path $releaseRoot "FIRST_RUN.md"
 $launcherPs1Path = Join-Path $releaseRoot "Launch-Core-Free.ps1"
@@ -193,6 +223,76 @@ if ($StagingRoot) {
   $stagingReleasePluginSettingsJoined = ($stagingReleasePluginSettings | Sort-Object -Unique) -join "|"
   if ($stagingReleasePluginSettingsJoined -ne $expectedReleasePluginSettingsJoined) {
     throw "staging_release_plugin_settings_mismatch: expected=$expectedReleasePluginSettingsJoined actual=$stagingReleasePluginSettingsJoined"
+  }
+
+  $whisperRuntimeDir = Join-Path $resolvedStagingRoot "bin\whisper_cpp"
+  $requiredWhisperRuntimeFiles = @(
+    "ggml.dll",
+    "ggml-base.dll",
+    "ggml-cpu.dll",
+    "ggml-vulkan.dll",
+    "mtmd.dll",
+    "whisper.dll",
+    "whisper-cli.exe"
+  )
+  foreach ($fileName in $requiredWhisperRuntimeFiles) {
+    $target = Join-Path $whisperRuntimeDir $fileName
+    if (-not (Test-Path -LiteralPath $target -PathType Leaf)) {
+      throw "missing_whisper_runtime_file: $fileName"
+    }
+    $item = Get-Item -LiteralPath $target
+    if ($item.Length -le 0) {
+      throw "empty_whisper_runtime_file: $fileName"
+    }
+  }
+  $whisperCli = Join-Path $whisperRuntimeDir "whisper-cli.exe"
+  $previousErrorActionPreference = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $helpOutput = & $whisperCli --help 2>&1
+    $helpExitCode = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+  }
+  if ($helpExitCode -ne 0) {
+    throw "whisper_cli_help_failed: code=$helpExitCode"
+  }
+  $helpText = ($helpOutput | Out-String)
+  if ($helpText -notmatch "--print-progress") {
+    throw "whisper_cli_print_progress_option_missing"
+  }
+
+  $tinyModel = Join-Path $resolvedStagingRoot "models\whisper\ggml-tiny.bin"
+  if (-not (Test-Path -LiteralPath $tinyModel -PathType Leaf)) {
+    throw "missing_whisper_smoke_model: models\whisper\ggml-tiny.bin"
+  }
+  $tinyModelItem = Get-Item -LiteralPath $tinyModel
+  if ($tinyModelItem.Length -le 0) {
+    throw "empty_whisper_smoke_model: models\whisper\ggml-tiny.bin"
+  }
+
+  $smokeBase = Join-Path ([System.IO.Path]::GetTempPath()) ("aimn_whisper_smoke_" + [guid]::NewGuid().ToString("N"))
+  $smokeWav = "$smokeBase.wav"
+  $smokeOutputBase = "$smokeBase.out"
+  $smokeTxt = "$smokeOutputBase.txt"
+  try {
+    New-WhisperSmokeWav $smokeWav
+    $previousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+      $smokeOutput = & $whisperCli -m $tinyModel -f $smokeWav -otxt -of $smokeOutputBase -l en --print-progress 2>&1
+      $smokeExitCode = $LASTEXITCODE
+    } finally {
+      $ErrorActionPreference = $previousErrorActionPreference
+    }
+    if ($smokeExitCode -ne 0) {
+      $smokeText = ($smokeOutput | Out-String).Trim()
+      throw "whisper_cli_smoke_failed: code=$smokeExitCode output=$smokeText"
+    }
+  } finally {
+    foreach ($tempFile in @($smokeWav, $smokeTxt)) {
+      Remove-Item -LiteralPath $tempFile -Force -ErrorAction SilentlyContinue
+    }
   }
 
   foreach ($forbiddenReleasePath in @(

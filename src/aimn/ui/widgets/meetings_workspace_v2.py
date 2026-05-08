@@ -6,7 +6,7 @@ import logging
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-from PySide6.QtCore import QPoint, QRect, QSize, Qt, QTimer, Signal, QMimeData
+from PySide6.QtCore import QMimeData, QPoint, QRect, QSize, Qt, QTimer, Signal
 from PySide6.QtGui import (
     QColor,
     QFont,
@@ -59,13 +59,19 @@ from aimn.ui.controllers.audio_playback_controller import AudioPlaybackControlle
 from aimn.ui.controllers.global_search_results_controller import GlobalSearchResultsController
 from aimn.ui.controllers.local_search_flow_controller import LocalSearchFlowController
 from aimn.ui.controllers.logs_buffer_controller import LogsBufferController
-from aimn.ui.controllers.main_text_panel_selection_controller import MainTextPanelSelectionController
-from aimn.ui.controllers.main_text_panel_search_flow_controller import MainTextPanelSearchFlowController
-from aimn.ui.controllers.main_text_panel_global_results_controller import MainTextPanelGlobalResultsController
-from aimn.ui.controllers.main_text_panel_navigation_controller import MainTextPanelNavigationController
-from aimn.ui.controllers.main_text_panel_state_controller import MainTextPanelStateController
+from aimn.ui.controllers.main_text_panel_global_results_controller import (
+    MainTextPanelGlobalResultsController,
+)
+from aimn.ui.controllers.main_text_panel_navigation_controller import (
+    MainTextPanelNavigationController,
+)
+from aimn.ui.controllers.main_text_panel_search_flow_controller import (
+    MainTextPanelSearchFlowController,
+)
+from aimn.ui.controllers.main_text_panel_selection_controller import (
+    MainTextPanelSelectionController,
+)
 from aimn.ui.controllers.results_view_controller import ResultsViewCallbacks, ResultsViewController
-from aimn.ui.controllers.search_action_controller import SearchActionController
 from aimn.ui.controllers.search_mode_controller import SearchModeController
 from aimn.ui.controllers.text_editor_controller import TextEditorController
 from aimn.ui.controllers.text_search_highlight_controller import TextSearchHighlightController
@@ -77,7 +83,6 @@ from aimn.ui.controllers.transcript_evidence_controller import (
     TranscriptSuggestionSpan as _TranscriptSuggestionSpan,
 )
 from aimn.ui.controllers.transcript_highlight_controller import TranscriptHighlightController
-from aimn.ui.controllers.transcript_navigation_controller import TranscriptNavigationController
 from aimn.ui.controllers.transcript_segments_view_controller import (
     TranscriptSegmentsViewCallbacks,
     TranscriptSegmentsViewController,
@@ -187,6 +192,7 @@ _DEFAULT_UI_LABELS = {
     "status.skipped": "Skipped",
     "status.failed": "Failed",
     "status.disabled": "Disabled",
+    "status.add_plugin": "Add plugin",
     "status.mock_suffix": "Mock",
     "pipeline.add": "ADD",
     "pipeline.run": "RUN",
@@ -219,6 +225,7 @@ _DEFAULT_UI_LABELS = {
     "search.prev": "Prev",
     "search.next": "Next",
     "search.clear": "Clear",
+    "search.back_to_text": "Back to text",
     "search.logs": "Logs",
     "search.copy": "Copy",
     "search.copy_all": "Copy All",
@@ -477,6 +484,9 @@ class PipelineTileV2(QFrame):
         name = str(stage.display_name or "")
         key = _ui_status(stage)
         status_label = _ui_label(self._ui_labels, f"status.{key}", _STATUS_LABELS.get(key, "Idle"))
+        override_label = str(stage.ui_metadata.get("status_label", "") if stage.ui_metadata else "").strip()
+        if override_label:
+            status_label = override_label
         if stage.stage_id == "llm_processing" and stage.ui_metadata.get("mock_summary"):
             status_label = f"{status_label} ({_ui_label(self._ui_labels, 'status.mock_suffix', 'Mock')})"
             key = "skipped"
@@ -585,6 +595,7 @@ class PipelineTileV2(QFrame):
             _ui_label(self._ui_labels, f"status.{state}", _STATUS_LABELS.get(state, state.title()))
             for state in _STATUS_LABELS
         ]
+        status_samples.append(_ui_label(self._ui_labels, "status.add_plugin", "Add plugin"))
         status_size = _measure_pipeline_badge_size(self.font(), status_samples)
         progress_size = _measure_pipeline_badge_size(self.font(), ["100%", "..."])
         self._status.setFixedSize(status_size)
@@ -1039,6 +1050,7 @@ class PipelinePanelV2(QWidget):
             _ui_label(self._ui_labels, f"status.{state}", _STATUS_LABELS.get(state, state.title()))
             for state in _STATUS_LABELS
         ]
+        status_samples.append(_ui_label(self._ui_labels, "status.add_plugin", "Add plugin"))
         status_size = _measure_pipeline_badge_size(self.font(), status_samples)
         progress_size = _measure_pipeline_badge_size(self.font(), ["100%", "..."])
         sample_title = max(
@@ -1765,6 +1777,11 @@ class MainTextPanelV2(QWidget):
         _configure_icon_button(self._clear_btn)
         self._clear_btn.clicked.connect(self._clear_search)
         top.addWidget(self._clear_btn)
+        self._search_back_btn = QToolButton()
+        _configure_icon_button(self._search_back_btn)
+        self._search_back_btn.clicked.connect(self._return_from_global_search)
+        self._search_back_btn.setVisible(False)
+        top.addWidget(self._search_back_btn)
         self._logs_btn = QToolButton()
         _configure_icon_button(self._logs_btn)
         self._logs_btn.clicked.connect(self._show_logs_dialog)
@@ -1973,6 +1990,7 @@ class MainTextPanelV2(QWidget):
         self._global_results_visible = bool(state.visible)
         self._global_results_rows = list(state.rows)
         self._rebuild_tabs(prefer_results=prefer_results)
+        self._sync_global_search_controls()
 
     def set_global_search_results(self, query: str, hits: list[dict], *, answer: str = "") -> None:
         state = MainTextPanelGlobalResultsController.apply_results(
@@ -1990,6 +2008,7 @@ class MainTextPanelV2(QWidget):
         self._global_results_visible = bool(state.visible)
         self._global_results_rows = list(state.rows)
         self._rebuild_tabs(prefer_results=True)
+        self._sync_global_search_controls()
         self._reset_search_state(clear_query=False)
 
     def clear_global_search_results(self) -> None:
@@ -2007,6 +2026,7 @@ class MainTextPanelV2(QWidget):
         self._global_results_visible = bool(state.visible)
         self._global_results_rows = list(state.rows)
         self._rebuild_tabs()
+        self._sync_global_search_controls()
         self._reset_search_state(clear_query=False)
 
     def highlight_query(self, query: str) -> None:
@@ -2107,6 +2127,7 @@ class MainTextPanelV2(QWidget):
             self._reset_search_state(clear_query=False)
         elif bool(state.get("clear_global_results")):
             self.clear_global_search_results()
+        self._sync_global_search_controls()
 
     def _submit_search(self) -> None:
         action, query = MainTextPanelSearchFlowController.submit_request(
@@ -2133,6 +2154,17 @@ class MainTextPanelV2(QWidget):
             self._search.setText("")
         self._matches.setText("")
         self.globalSearchCleared.emit()
+
+    def _return_from_global_search(self) -> None:
+        idx = self._mode.findData("local")
+        if idx >= 0 and idx != self._mode.currentIndex():
+            self._mode.setCurrentIndex(idx)
+        self._search.setText("")
+        self._matches.setText("")
+        self.globalSearchCleared.emit()
+
+    def _sync_global_search_controls(self) -> None:
+        self._search_back_btn.setVisible(bool(self._global_results_visible))
 
     def select_version_alias(self, alias: str) -> None:
         target = MainTextPanelNavigationController.alias_tab_index(

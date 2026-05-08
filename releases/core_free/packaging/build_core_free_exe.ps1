@@ -12,6 +12,7 @@ $releaseRoot = Split-Path -Parent $packagingRoot
 $repoRoot = (Resolve-Path (Join-Path $releaseRoot "..\..")).Path
 $buildBundleScript = Join-Path $packagingRoot "build_core_free.ps1"
 $launcherScript = Join-Path $packagingRoot "core_free_launcher.py"
+$iconPath = Join-Path $repoRoot "src\aimn\ui\assets\app_icon.ico"
 
 if (-not $StagingDir) {
   $StagingDir = Join-Path $repoRoot "output_build\core_free_profile"
@@ -46,6 +47,7 @@ try {
     --name $exeName `
     --distpath $resolvedDistRoot `
     --workpath (Join-Path $repoRoot "build\pyinstaller_core_free") `
+    --icon $iconPath `
     --paths (Join-Path $repoRoot "src") `
     --collect-submodules aimn `
     --collect-data aimn.ui.assets `
