@@ -72,6 +72,8 @@ $expectedBundledPluginIds = @(
 )
 $expectedReleasePluginSettings = @(
   "llm.llama_cli.json",
+  "text_processing.minutes_heuristic_v2.json",
+  "text_processing.semantic_refiner.json",
   "transcription.whisperadvanced.json"
 )
 
@@ -122,6 +124,10 @@ if ($preset.stages.llm_processing.plugin_id -ne "llm.llama_cli") {
 
 if ([string]$preset.stages.llm_processing.params.gpu_layers -ne "-1") {
   throw "gpu_layers_must_remain_minus_one"
+}
+
+if ([int]$preset.stages.llm_processing.params.ctx_size -lt 32768) {
+  throw "llm_context_must_be_at_least_32768"
 }
 
 $releasePluginSettingsDir = Join-Path $configRoot "settings\plugins"

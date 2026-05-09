@@ -1,6 +1,7 @@
 {
   "hidden_model_files": [],
   "hidden_model_ids": [],
+  "ctx_size": 32768,
   "models": [
     {
       "availability_status": "needs_setup",

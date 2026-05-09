@@ -51,6 +51,24 @@ try {
     --paths (Join-Path $repoRoot "src") `
     --collect-submodules aimn `
     --collect-data aimn.ui.assets `
+    --collect-data huggingface_hub `
+    --collect-submodules huggingface_hub `
+    --collect-data sentence_transformers `
+    --collect-submodules sentence_transformers `
+    --collect-data transformers `
+    --collect-submodules transformers.models.auto `
+    --collect-submodules transformers.models.bert `
+    --collect-submodules transformers.models.roberta `
+    --collect-submodules transformers.models.xlm_roberta `
+    --collect-submodules tokenizers `
+    --collect-submodules safetensors `
+    --collect-data torch `
+    --collect-binaries torch `
+    --hidden-import torch `
+    --hidden-import sklearn.metrics.pairwise `
+    --hidden-import sklearn.metrics._pairwise_distances_reduction `
+    --collect-binaries scipy `
+    --collect-binaries numpy `
     $launcherScript
 } finally {
   Pop-Location

@@ -10,7 +10,6 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
-from huggingface_hub import snapshot_download
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import (
     QApplication,
@@ -68,6 +67,31 @@ def _download_file(url: str, target: Path, *, progress_cb=None) -> None:
             if callable(progress_cb) and total > 0:
                 progress_cb(min(1.0, downloaded / total))
     temp.replace(target)
+
+
+def _snapshot_download(model_id: str, target_root: Path) -> None:
+    from huggingface_hub import snapshot_download
+
+    env_overrides = {
+        "HF_HUB_DISABLE_PROGRESS_BARS": "1",
+        "HF_HUB_DISABLE_TELEMETRY": "1",
+        "NO_COLOR": "1",
+    }
+    previous = {key: os.environ.get(key) for key in env_overrides}
+    os.environ.update(env_overrides)
+    try:
+        snapshot_download(repo_id=model_id, cache_dir=str(target_root))
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
+def _is_certificate_error(exc: Exception) -> bool:
+    text = str(exc or "").lower()
+    return "certificate_verify_failed" in text or "self-signed certificate" in text
 
 
 def _normalize_theme_id(raw: str) -> str:
@@ -725,20 +749,32 @@ class PortableInstallerDialog(QDialog):
             if str(option.get("mode", "")).strip() != "skip"
         ]
         if semantic_options:
+            semantic_blocked_reason = ""
             for semantic_option in semantic_options:
                 model_id = str(semantic_option.get("model_id", "") or "").strip()
                 if not model_id:
                     continue
                 target = target_dir / "models" / "embeddings"
+                if semantic_blocked_reason:
+                    self._record_download_error(
+                        "Embeddings",
+                        model_id,
+                        RuntimeError(f"download_skipped_after_previous_failure:{semantic_blocked_reason}"),
+                        source=f"repo:{model_id}",
+                        target=target,
+                    )
+                    continue
                 try:
                     self._set_state(
                         message=f"Downloading embedding model {model_id}",
                         semantic_indeterminate=True,
                         overall_progress=62,
                     )
-                    snapshot_download(repo_id=model_id, cache_dir=str(target))
+                    _snapshot_download(model_id, target)
                     self._activate_semantic_model(target_dir, model_id)
                 except Exception as exc:
+                    if _is_certificate_error(exc):
+                        semantic_blocked_reason = "certificate_verify_failed"
                     self._record_download_error(
                         "Embeddings",
                         model_id,
@@ -852,6 +888,7 @@ class PortableInstallerDialog(QDialog):
         llm_payload["model_id"] = model_id
         llm_payload["model_quant"] = quant
         llm_payload["model_path"] = ""
+        llm_payload["ctx_size"] = 32768
         _write_json(llm_settings_path, llm_payload)
 
         pipeline_path = target_dir / "config" / "settings" / "pipeline" / "default.json"
@@ -869,6 +906,7 @@ class PortableInstallerDialog(QDialog):
         params["model_id"] = model_id
         params["model_quant"] = quant
         params["model_path"] = ""
+        params["ctx_size"] = 32768
         _write_json(pipeline_path, pipeline_payload)
 
     def _launch_installed_app(self, target_dir: Path) -> None:

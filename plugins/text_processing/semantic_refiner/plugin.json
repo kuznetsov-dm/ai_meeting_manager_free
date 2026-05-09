@@ -4,7 +4,7 @@
   "product_name": "Semantic Refiner",
   "highlights": "Очистка транскрипции, смысловые блоки и ключевые слова без внешних сервисов.",
   "description": "Плагин выполняет интеллектуальную чистку текста, разбивает его на логические блоки и извлекает наиболее значимые ключевые слова (сущности и термины).",
-  "ui_stage": "llm_processing",
+  "ui_stage": "text_processing",
   "capabilities": {
     "models": {
       "storage": "local",

@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import re
 import shutil
 from collections import Counter
 from pathlib import Path
 from typing import Any
-
-from huggingface_hub import snapshot_download
 
 from aimn.plugins.interfaces import (
     KIND_EDITED,
@@ -155,11 +154,51 @@ def action_download_model(settings: dict, params: dict) -> ActionResult:
         return ActionResult(status="error", message="model_not_supported", data={"model_id": model_id})
     target_root = Path(utils.get_models_dir())
     target_root.mkdir(parents=True, exist_ok=True)
-    snapshot_download(repo_id=model_id, cache_dir=str(target_root))
+    try:
+        _snapshot_download(model_id, target_root)
+    except Exception as exc:
+        return ActionResult(
+            status="error",
+            message=_download_error_message(exc),
+            data={"model_id": model_id},
+        )
     refreshed = action_list_models(settings, {})
     data = dict(refreshed.data or {}) if isinstance(refreshed.data, dict) else {}
     data["model_id"] = model_id
     return ActionResult(status="success", message="model_downloaded", data=data)
+
+
+def _snapshot_download(model_id: str, target_root: Path) -> None:
+    from huggingface_hub import snapshot_download
+
+    env_overrides = {
+        "HF_HUB_DISABLE_PROGRESS_BARS": "1",
+        "HF_HUB_DISABLE_TELEMETRY": "1",
+        "NO_COLOR": "1",
+    }
+    previous = {key: os.environ.get(key) for key in env_overrides}
+    os.environ.update(env_overrides)
+    try:
+        snapshot_download(repo_id=model_id, cache_dir=str(target_root))
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
+def _download_error_message(exc: Exception) -> str:
+    text = str(exc or "").strip()
+    lowered = text.lower()
+    if "certificate_verify_failed" in lowered or "self-signed certificate" in lowered:
+        return (
+            "certificate_verify_failed: Hugging Face rejected the TLS certificate. "
+            "Install the corporate root CA for Python/certifi or download the model later from Settings."
+        )
+    if isinstance(exc, ImportError) or "no module named" in lowered:
+        return "huggingface_hub_unavailable"
+    return text or exc.__class__.__name__
 
 
 def action_remove_model(settings: dict, params: dict) -> ActionResult:

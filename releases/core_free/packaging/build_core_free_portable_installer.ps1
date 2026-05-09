@@ -2,7 +2,8 @@ param(
   [string]$ReleaseDir = "",
   [string]$PayloadZipPath = "",
   [string]$PyInstallerDistDir = "",
-  [string]$OutputExePath = ""
+  [string]$OutputExePath = "",
+  [switch]$SkipAppBuild
 )
 
 $ErrorActionPreference = "Stop"
@@ -29,7 +30,9 @@ if (-not $OutputExePath) {
   $OutputExePath = Join-Path $repoRoot "output_build\AI Meeting Manager Free Portable Installer.exe"
 }
 
-& powershell -ExecutionPolicy Bypass -File $buildBundleScript -FinalOutputDir $ReleaseDir
+if (-not $SkipAppBuild) {
+  & powershell -ExecutionPolicy Bypass -File $buildBundleScript -FinalOutputDir $ReleaseDir
+}
 
 if (-not (Test-Path -LiteralPath $ReleaseDir -PathType Container)) {
   throw "missing_release_dir: $ReleaseDir"
@@ -66,7 +69,7 @@ try {
     --workpath $workPath `
     --icon $iconPath `
     --collect-data huggingface_hub `
-    --collect-submodules huggingface_hub `
+    --hidden-import huggingface_hub `
     --add-data "$PayloadZipPath;." `
     --add-data "$manifestPath;." `
     $installerScript

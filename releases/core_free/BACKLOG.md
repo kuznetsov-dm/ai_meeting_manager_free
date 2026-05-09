@@ -6,6 +6,14 @@ Explicit non-goal: do not add a Whisper fallback that retries with `--no-gpu` or
 
 ## P0 - Release Blockers
 
+- [x] Fix remaining portable embeddings/LLM issues from `logs (5)`.
+  - [x] Move `text_processing.semantic_refiner` and `text_processing.minutes_heuristic_v2` back to the `text_processing` UI stage.
+  - [x] Make `semantic_refiner` load without a top-level `huggingface_hub` import.
+  - [x] Prevent cascading Hugging Face progress-bar errors after a certificate failure in the installer.
+  - [x] Include embeddings runtime packages in the portable app PyInstaller bundle.
+  - [x] Align release text-processing settings with the E5 embeddings model catalog.
+  - [x] Increase portable llama context from `4096` to `32768` and keep single-pass processing without chunking.
+
 - [x] Replace bundled Whisper runtime with the known-working `whisper_cpp` runtime set.
   - Source verified: `C:\Users\dmitry\Documents\GitHub\whisper_cpp`.
   - Files replaced: `ggml.dll`, `ggml-base.dll`, `ggml-cpu.dll`, `ggml-vulkan.dll`, `mtmd.dll`, `whisper.dll`, `whisper-cli.exe`.
@@ -100,3 +108,5 @@ Explicit non-goal: do not add a Whisper fallback that retries with `--no-gpu` or
 - 2026-05-08: Added semantic embedding model management via plugin-owned actions and metadata.
 - 2026-05-08: Added release validation for required Whisper runtime files and `--print-progress` CLI support.
 - 2026-05-08: Added tiny-model Whisper CLI smoke validation, release checklist docs, and richer installer download diagnostics.
+- 2026-05-09: Reviewed `logs (5)`: Whisper transcription succeeded; remaining failures were embeddings runtime/download issues and llama `ctx_size=4096`.
+- 2026-05-09: Fixed text plugin stage metadata, hardened Hugging Face installer downloads, bundled embeddings runtime dependencies, and raised portable llama context to 32768 without chunking.

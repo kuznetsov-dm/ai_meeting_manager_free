@@ -4,7 +4,7 @@
   "product_name": "Minutes Heuristic v2",
   "highlights": "Превращает разговор во “minutes”: решения, задачи, проекты, вопросы, риски.",
   "description": "Делает структурированный minutes-документ в строгом формате, который удобно читать и легко парсить дальше. Небольшая AI-магия там, где она полезна: гибрид эвристик и ML помогает извлекать действия и смысл без ручной разметки.",
-  "ui_stage": "llm_processing",
+  "ui_stage": "text_processing",
   "capabilities": {
     "alias_code_policy": {
       "provider_code": "mh",

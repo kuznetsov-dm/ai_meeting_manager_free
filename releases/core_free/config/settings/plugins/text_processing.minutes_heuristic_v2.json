@@ -1,0 +1,9 @@
+{
+  "actions_mode": "hybrid",
+  "allow_download": false,
+  "cascade": "balanced",
+  "embeddings_allow_download": false,
+  "embeddings_enabled": true,
+  "embeddings_model_id": "intfloat/multilingual-e5-small",
+  "summary_mode": "hybrid"
+}

@@ -1,0 +1,10 @@
+{
+  "allow_download": false,
+  "embeddings_allow_download": false,
+  "embeddings_enabled": true,
+  "embeddings_model_id": "intfloat/multilingual-e5-small",
+  "extract_keywords": true,
+  "keyword_limit": 10,
+  "min_block_length": 100,
+  "semantic_similarity_threshold": 0.72
+}

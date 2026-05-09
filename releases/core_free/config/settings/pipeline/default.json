@@ -30,6 +30,9 @@
         "cascade": "balanced",
         "summary_mode": "hybrid",
         "actions_mode": "hybrid",
+        "embeddings_enabled": true,
+        "embeddings_model_id": "intfloat/multilingual-e5-small",
+        "embeddings_allow_download": false,
         "allow_download": false
       }
     },
@@ -48,7 +51,7 @@
         "prompt_max_words": 600,
         "max_tokens": 900,
         "temperature": 0.2,
-        "ctx_size": 4096,
+        "ctx_size": 32768,
         "gpu_layers": -1,
         "extra_args": ""
       }

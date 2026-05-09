@@ -651,7 +651,8 @@ class LlamaCliPlugin:
         self.prompt_language = (prompt_language or "").strip()
         self.prompt_presets = prompt_presets or []
         self.prompt_max_words = int(prompt_max_words) if isinstance(prompt_max_words, str) else prompt_max_words
-        # Legacy fields are accepted for backward compatibility but no longer limit generation or trigger chunking.
+        # Legacy fields are accepted for backward compatibility but do not limit generation
+        # or trigger transcript chunking. The portable profile controls context via ctx_size.
         self.max_tokens = -1
         self.temperature = float(temperature) if isinstance(temperature, str) else temperature
         self.ctx_size = int(ctx_size) if isinstance(ctx_size, str) else ctx_size
@@ -927,6 +928,7 @@ class LlamaCliPlugin:
                 system_prompt=chunk_system_prompt,
                 user_text=chunk_user_text,
                 warnings=list(merged_warnings) + [f"llama_cli_chunk_pass({index}/{total_chunks})"],
+                cancel_requested=None,
             )
             merged_warnings = self._merge_warning_lists(merged_warnings, chunk_result.warnings)
             if self._is_mock_result(chunk_result):
@@ -954,6 +956,7 @@ class LlamaCliPlugin:
             system_prompt=merge_system_prompt,
             user_text=merge_user_text,
             warnings=self._merge_warning_lists(merged_warnings, [f"llama_cli_chunk_merge({total_chunks})"]),
+            cancel_requested=None,
         )
 
     def _build_result_from_output(self, output: str, warnings: list[str]) -> PluginResult:
